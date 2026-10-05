@@ -1,5 +1,4 @@
 # Algo Question Animation
-互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
 
 | 題號 | 題目 | 動畫 |
 |---|---|---|
