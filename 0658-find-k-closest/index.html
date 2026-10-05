@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>658 · Find K Closest Elements｜演算法動畫</title>
+<meta name="description" content="用可播放的逐步動畫理解 LeetCode 658：二分搜尋長度固定的視窗起點。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">BINARY SEARCH / 658</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 658 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Find K Closest Elements</h1><p>不是搜尋某個數字，而是搜尋<span class="accent">最佳視窗的起點</span>。</p></div><div class="complexity">SEARCH <b>O(log(n − k + 1))</b><small>回傳切片另需 O(k)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">排序陣列 arr<input id="arr" value="1, 2, 3, 4, 5, 6, 7, 8, 9" autocomplete="off" spellcheck="false"></label><label>元素數 k<input id="k" type="number" min="1" max="40" value="4" required></label><label>目標 x<input id="x" type="number" min="-1000000" max="1000000" value="6" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="tie">同距離</button><button type="button" data-example="outside">x 在範圍外</button><button type="button" data-example="duplicate">重複數字</button><button type="button" data-example="all">k = n</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="二分搜尋動畫">
+      <div class="panel-head"><span>01 / 視窗探索</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>left</small><b id="left">0</b></div><div><small>right</small><b id="right">5</b></div><div><small>mid</small><b id="mid">—</b></div><div class="target"><small>目標 x</small><b id="target">6</b></div></div>
+      <div class="array-scroll"><div id="array" class="array"><div id="window" class="window"></div></div></div>
+      <div class="legend"><span><i class="mint"></i>長度 k 的視窗</span><span><i class="orange"></i>右移時加入的值</span><span>上方標籤為索引指標</span></div>
+      <div class="start-range"><div class="section-label">可能的視窗起點 <span>搜尋範圍 [left, right]</span></div><div id="starts" class="starts"></div></div>
+      <div id="comparison" class="comparison"><div><small>x − arr[mid]</small><strong id="distance-a">—</strong><span id="expression-a">左端比較值</span></div><b id="operator">?</b><div><small>arr[mid + k] − x</small><strong id="distance-b">—</strong><span id="expression-b">右側比較值</span></div></div>
+      <p class="signed-note">依原始程式使用帶正負號的差值，不取絕對值；這也能處理 x 在陣列範圍外的情況。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼只比較兩端？</summary><h2>只比較兩個不同的元素。</h2><p>視窗 <code>[mid, mid + k)</code> 向右移一格時，中間 k − 1 個元素不變。只需比較離開的 <code>arr[mid]</code> 與加入的 <code>arr[mid + k]</code>。</p><p>陣列已排序，因此可以依這次比較排除一半起點；相等時保留左側，符合較小值優先的規則。</p><div class="mini"><span>A</span><i></i><i></i><i></i><em>B</em></div><small>A 離開 · 中間共用 · B 加入</small></details></aside>
+  </div>
+  <footer><span>658 / 搜尋起點，而不是逐一排序距離。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>

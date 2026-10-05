@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>238 · Product of Array Except Self｜演算法動畫</title>
+<meta name="description" content="逐步觀察 prefix 與 postfix 兩趟累乘，計算除自身以外的陣列乘積。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">PREFIX × POSTFIX / 238</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 238 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Product of Array Except Self</h1><p>先乘左邊，再乘右邊，得到<span class="accent">除了自己以外的乘積</span>。</p></div><div class="complexity">TIME <b>O(n)</b><small>輔助空間 O(1)，輸出 O(n)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">陣列 nums<input id="nums" value="1, 2, 3, 4" autocomplete="off" spellcheck="false"></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="negative">含負數</button><button type="button" data-example="zero">一個零</button><button type="button" data-example="zeros">兩個零</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="前後綴乘積動畫">
+      <div class="panel-head"><span>01 / 兩趟累乘</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>i</small><b id="i">—</b></div><div><small>prefix</small><b id="prefix">—</b></div><div><small>postfix</small><b id="postfix">—</b></div></div>
+      <div class="row-heading">nums <span id="direction">初始化</span></div><div class="array-scroll"><div id="nums-row" class="array"></div></div>
+      <div class="row-heading">arr <span>每一格保存目前累乘結果</span></div><div class="array-scroll"><div id="arr-row" class="array"></div></div>
+      <div class="legend"><span><i class="mint"></i>目前累積量包含的元素</span><span><i class="orange"></i>正在處理的索引 i</span></div>
+      <div class="comparison"><div><small id="expression-label">目前操作</small><strong id="expression">—</strong><span id="operation-note">先建立輸出陣列</span></div></div>
+      <p class="signed-note">先更新 arr[i]，再把 nums[i] 乘入累積量，因此不會把自己算進自己的答案；全程不使用除法。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼先更新 arr[i]？</summary><h2>答案 = 左側乘積 × 右側乘積。</h2><p>第一趟由左往右，更新 arr[i] 時，prefix 只包含 nums[0…i−1]。更新完成後，才將 nums[i] 納入 prefix，供下一格使用。</p><p>第二趟由右往左，更新 arr[i] 時，postfix 只包含 nums[i+1…n−1]。把它乘進已保存的左側乘積，就得到答案。</p><p>邊界外沒有元素時，乘積視為 1。負數與零都可以直接處理，不需要除法或特判。</p><p>原始演算法時間 O(n)，除輸出 arr 外的輔助空間 O(1)。動畫另外保存每一步的快照；數字使用整數精確運算。</p></details></aside>
+  </div>
+  <footer><span>238 / 左側乘積 × 右側乘積，不需要除法。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>

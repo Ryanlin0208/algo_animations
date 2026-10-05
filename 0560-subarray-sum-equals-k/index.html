@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>560 · Subarray Sum Equals K｜演算法動畫</title>
+<meta name="description" content="逐步觀察前綴和、雜湊表查詢與子陣列計數。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">PREFIX SUM + HASH MAP / 560</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 560 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Subarray Sum Equals K</h1><p>用目前前綴和減去 k，尋找<span class="accent">曾經出現的前綴和</span>。</p></div><div class="complexity">TIME <b>O(n)</b><small>額外空間 O(n)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">陣列 nums<input id="nums" value="1, 2, 1, 2, 1" autocomplete="off" spellcheck="false"></label><label>目標 k<input id="k" type="number" min="-1000000" max="1000000" value="3" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="negative">含負數</button><button type="button" data-example="zeros">全為零</button><button type="button" data-example="none">沒有解</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="前綴和動畫">
+      <div class="panel-head"><span>01 / 前綴和探索</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>prefix</small><b id="prefix">0</b></div><div><small>ans</small><b id="ans">0</b></div><div class="target"><small>k</small><b id="target">3</b></div></div>
+      <div class="array-scroll"><div id="array" class="array"></div></div>
+      <div class="legend"><span><i class="mint"></i>已累加</span><span><i class="orange"></i>目前 num</span></div>
+      <div class="comparison"><div><small>尋找 prefix − k</small><strong id="needed">—</strong><span id="expression">尚未查詢</span></div><b>→</b><div><small>prefix_count[需要的值]</small><strong id="hits">—</strong><span>先查詢，再寫入目前 prefix</span></div></div>
+      <div class="start-range"><div class="section-label">prefix_count <span>前綴和 → 出現次數</span></div><div id="counts" class="counts"></div></div>
+      <div class="matches"><span>本輪符合的子陣列（索引含兩端）</span><div id="matches">尚未查詢</div></div>
+      <p class="signed-note">{0: 1} 代表陣列開始前的空前綴；它讓從索引 0 開始的子陣列也能被計入。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼先查詢再更新？</summary><h2>兩個前綴和的差，就是中間的總和。</h2><p>若目前前綴和是 prefix，要找總和為 k 的連續子陣列，就找先前有多少個前綴和等於 <code>prefix − k</code>。每次出現都代表一個不同起點，所以必須累加次數。</p><p>先查詢，再把目前 prefix 寫入表中。若反過來，k = 0 時會把目前前綴和自己配對，錯算長度為 0 的子陣列。</p><p>負數與零都適用，不需要排序。原始演算法平均時間 O(n)、額外空間 O(n)；動畫另外保存步驟與索引供回放。</p></details></aside>
+  </div>
+  <footer><span>560 / 先查詢，再更新；重複前綴和要累加次數。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
