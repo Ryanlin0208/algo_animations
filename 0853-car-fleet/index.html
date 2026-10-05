@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>853 · Car Fleet｜演算法動畫</title>
+<meta name="description" content="用逐步動畫理解車隊：依位置排序，比較抵達時間，計算車隊數。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">SORT + GREEDY / 853</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 853 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Car Fleet</h1><p>從最靠近終點的車開始，比較<span class="accent">抵達時間</span>。</p></div><div class="complexity">TIME <b>O(n log n)</b><small>排序空間 O(n)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">位置 position<input id="position" value="10, 8, 0, 5, 3" autocomplete="off"></label><label class="array-input">速度 speed<input id="speeds" value="2, 4, 1, 1, 3" autocomplete="off"></label><label>終點 target<input id="target-input" type="number" min="1" max="1000000" value="12" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="tie">終點相遇</button><button type="button" data-example="separate">各自成隊</button><button type="button" data-example="merge">全部合併</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="車隊動畫">
+      <div class="panel-head"><span>01 / 車隊探索</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>fleets</small><b id="fleets">0</b></div><div><small>目前車輛</small><b id="current">—</b></div><div class="target"><small>target</small><b id="target">12</b></div></div>
+      <div class="road-caption">位置圖 <span>起點 0 → 終點；每列是一台車，非不同車道</span></div><div id="road" class="road"></div>
+      <div class="legend"><span><i class="mint"></i>已分配車隊（F）</span><span><i class="orange"></i>目前處理的車</span></div>
+      <div class="start-range"><div class="section-label">掃描順序 <span>依 position 由大到小；C 為原始輸入編號</span></div><div id="cars" class="cars"></div></div>
+      <div class="comparison"><div><small>time = (target − pos) / spd</small><strong id="time">—</strong><span id="expression">尚未計算</span></div><b id="operator">?</b><div><small>previous_time</small><strong id="previous">0</strong><span>最近建立車隊的抵達時間</span></div></div>
+      <p class="signed-note">time ≤ previous_time：在終點前或恰好在終點追上，併入前方車隊。位置圖呈現初始位置；播放步驟呈現程式掃描。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼只記錄前方車隊時間？</summary><h2>後車不能超越前車。</h2><p>先將位置由大到小排序，從最靠近終點的車往後看。若後車原本能更早或同時到達，它就會追上前方車隊，之後只能跟著前車走。</p><p>只有 <code>time &gt; previous_time</code> 才追不上，必須新增車隊並更新時間。合併時保留 <code>previous_time</code>，因為整隊抵達的時間由前方較慢的車決定。</p><p>排序 O(n log n)，掃描 O(n)，額外空間 O(n)。動畫為了逐步回放另儲存狀態。</p></details></aside>
+  </div>
+  <footer><span>853 / 從前往後掃描，用抵達時間判斷車隊。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
