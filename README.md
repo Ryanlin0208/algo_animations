@@ -1,7 +1,7 @@
 # Algo Question Animation
-[LINK](https://ryanlin0208.github.io/leetcode_animations/)
+[OPEN LINK HERE ](https://ryanlin0208.github.io/leetcode_animations/)
 
-| 題號 | 題目 | 動畫 |
+| 題號 | 題目 | 資料夾 |
 |---|---|---|
 | 92 | Reverse Linked List II | [開啟](./0092-reverse-linked-list-ii/) |
 | 146 | LRU Cache | [開啟](./0146-lru-cache/) |
