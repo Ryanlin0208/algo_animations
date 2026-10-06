@@ -1,5 +1,5 @@
 # Algo Question Animation
-[OPEN LINK HERE ](https://ryanlin0208.github.io/leetcode_animations/)
+[OPEN LINK HERE ](https://ryanlin0208.github.io/algo_animations/)
 
 | 題號 | 題目 | 資料夾 |
 |---|---|---|
