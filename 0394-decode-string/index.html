@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>394 · Decode String｜演算法動畫</title>
+<meta name="description" content="逐字掃描編碼字串，觀察堆疊保存外層狀態與巢狀展開。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">STACK / NESTED STRINGS / 394</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 394 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Decode String</h1><p>遇到 [ 保存外層，遇到 ] <span class="accent">展開後接回外層</span>。</p></div><div class="complexity">METHOD <b>Stack</b><small>逐字掃描 · 由內向外展開</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">編碼字串 s<input id="s" value="3[a2[c]]" maxlength="80" autocomplete="off" spellcheck="false"></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="nested">巢狀括號</button><button type="button" data-example="groups">多個區塊</button><button type="button" data-example="digits">多位數</button><button type="button" data-example="plain">純字母</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="字串解碼動畫">
+      <div class="panel-head"><span>01 / 字串與堆疊</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>char</small><b id="char">—</b></div><div><small>current_number</small><b id="number">0</b></div><div><small>深度</small><b id="depth">0</b></div></div>
+      <div class="array-scroll"><div id="chars" class="array"></div></div>
+      <div class="legend"><span><i class="mint"></i>已讀取</span><span><i class="orange"></i>目前字元</span></div>
+      <div class="decode-panels"><div><div class="section-label">stack <span>頂端在上 · 後進先出</span></div><div id="stack" class="stack"></div></div><div><div class="section-label">current_string</div><div id="current-string" class="string-box"></div><div class="section-label">本次展開</div><div id="expansion" class="string-box formula"></div></div></div>
+      <p class="signed-note">stack 中每張卡片保存 (外層字串, 重複次數)。空字串顯示為 ""；數字不是輸出字元。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼使用堆疊？</summary><h2>最內層的括號會最先完成。</h2><p>遇到 [ 時，把目前字串和數字存進 stack，然後清空累積變數。遇到 ] 時，彈出最近保存的狀態，計算 <code>previous_string + current_string * repeat</code>。</p><p>例如 3[a2[c]]：先展開 2[c] 得到 cc，接回 a 成為 acc，最後重複三次。</p><p>多位數用 <code>current_number * 10 + int(char)</code> 累積。右括號分支不重設 current_number；本動畫保留原始程式的變數更新方式。</p><p>掃描 n 個字元；實際時間還包含每次字串串接和重複所複製的字元，不能只算 O(n)。堆疊保存各層狀態，輸出也需要對應長度的空間。</p><p>動畫限制：輸入 1–80 字元、正整數重複次數 1–300，展開最多 2,000 字元。僅接受英文字母及有效的 k[字串] 結構。</p></details></aside>
+  </div>
+  <footer><span>394 / 保存外層 → 解碼內層 → 展開接回。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>739 · Daily Temperatures｜演算法動畫</title>
+<meta name="description" content="以單調堆疊尋找下一個更暖的日子，逐步回填等待天數。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">MONOTONIC STACK / 739</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 739 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Daily Temperatures</h1><p>今天更暖，就替堆疊中的舊日子<span class="accent">填入等待天數</span>。</p></div><div class="complexity">TIME <b>O(n)</b><small>空間 O(n)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">temperatures<input id="temperatures" value="73, 74, 75, 71, 69, 72, 76, 73" autocomplete="off"></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="equal">相同溫度</button><button type="button" data-example="decreasing">持續降溫</button><button type="button" data-example="cascade">一次彈出多天</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="每日溫度動畫">
+      <div class="panel-head"><span>01 / 溫度與等待天數</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>i</small><b id="i">—</b></div><div><small>今天溫度</small><b id="temperature">—</b></div><div><small>idx</small><b id="idx">—</b></div></div>
+      <div class="chart-scroll"><div id="chart" class="temp-chart"></div></div>
+      <div class="legend"><span><i class="mint"></i>堆疊內等待中的日子</span><span><i class="orange"></i>今天／本步回填</span></div>
+      <div class="decode-panels"><div><div class="section-label">stk（儲存索引）<span>頂端在上 · 等待更暖的日子</span></div><div id="stack" class="stack"></div></div><div><div class="section-label">while 條件</div><div id="comparison" class="string-box"></div><div class="section-label">本次回填</div><div id="calculation" class="string-box formula"></div></div></div>
+      <p class="signed-note">柱下依序顯示索引與 ans。0 在處理途中代表尚未找到；掃描完成後代表未來沒有更暖的一天。溫度相同不彈出。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼用單調堆疊？</summary><h2>只保留還沒找到更暖日子的索引。</h2><p>堆疊從底到頂對應的溫度維持非遞增。當今天比頂端更暖，就彈出該索引 idx，填入 <code>ans[idx] = i - idx</code>，再繼續比較新的頂端。</p><p>條件使用嚴格大於，因此相同溫度不能結束等待。while 結束後，才把今天的索引 i 推入堆疊。</p><p>每個索引只進入、離開堆疊各一次，總時間 O(n)，堆疊與答案空間 O(n)。最後留在堆疊的索引，其答案維持 0。</p><p>動畫支援 1–30 天，整數溫度範圍 30–100。柱高以 30 為基準，頂端標示實際溫度。</p></details></aside>
+  </div>
+  <footer><span>739 / 更暖才彈出，索引差就是等待天數。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
