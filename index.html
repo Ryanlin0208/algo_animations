@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Algo Animation </title>
-    <meta name="description" content="用互動動畫理解演算法，逐步觀察程式碼、搜尋範圍與結果。">
+    <title>Algo Animation Lab</title>
+    <meta name="description" content="用互動動畫理解 Algo 演算法，逐步觀察程式碼、搜尋範圍與結果。">
     <link rel="icon"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Ctext x='5' y='23' fill='%2359e0bd' font-size='21'%3E%5B%5D%3C/text%3E%3C/svg%3E">
     <style>
@@ -206,22 +206,24 @@
                 transition: none
             }
         }
-    </style>
+    
+main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.section-head{grid-column:1/-1;margin:0 0 2px}.lesson{margin:0!important;grid-template-columns:55px minmax(0,1fr);gap:16px;padding:23px;align-items:start;height:100%}.lesson .open{grid-column:2}.lesson h3{font-size:19px}.tags{flex-wrap:wrap}.number{font-size:23px}.brand{letter-spacing:1.5px}@media(max-width:700px){#lessons{grid-template-columns:1fr}main{padding:22px 16px}.lesson{padding:19px;gap:12px}.intro{padding:28px 0}.lesson .open{grid-column:2}.brand{font-size:11px}}
+</style>
 </head>
 
 <body>
     <main>
         <header>
-            <div class="brand"><span>[k]</span> ALGORITHM Animation</div><a href="#lessons">瀏覽所有動畫</a>
+            <div class="brand"><span>A</span> ALGO / ANIMATION LAB</div><a href="#lessons">瀏覽所有動畫</a>
         </header>
         <section class="intro">
-            <div class="eyebrow">INTERACTIVE NOTES</div>
+            <div class="eyebrow">INTERACTIVE ALGORITHM ANIMATIONS</div>
             <h1>讓演算法，一步一步動起來。</h1>
             <p>選一道題目，搭配程式碼觀察每一步的變化。</p>
         </section>
         <section id="lessons" aria-label="題目列表">
             <div class="section-head">
-                <h2>所有動畫</h2><span class="count">09 LESSONS</span>
+                <h2>所有動畫</h2><span class="count">10 LESSONS</span>
             </div>
             <a class="lesson" style="margin-bottom:14px" href="./0092-reverse-linked-list-ii/">
                 <div class="number">0092</div>
@@ -303,7 +305,8 @@
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-        </section>
+        <a class="lesson" href="./1011-capacity-to-ship-packages/"><div class="number">1011</div><div><h3>Capacity to Ship Packages</h3><p>依序裝船、超重換天，二分搜尋最小載重。</p><div class="tags"><span class="difficulty">Medium</span><span>Binary Search</span><span>裝載模擬</span></div></div><span class="open">開啟互動動畫</span></a></section>
+        <footer>Algo Animation Lab · 每一題，一個可操作的解題過程。</footer>
     </main>
 </body>
 
