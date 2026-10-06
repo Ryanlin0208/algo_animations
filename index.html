@@ -1,23 +1,310 @@
 <!doctype html>
 <html lang="zh-Hant">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Algo Question Visualization</title>
-<meta name="description" content="用互動動畫理解 LeetCode 演算法，逐步觀察程式碼、搜尋範圍與結果。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Ctext x='5' y='23' fill='%2359e0bd' font-size='21'%3E%5B%5D%3C/text%3E%3C/svg%3E">
-<style>
-:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#0b111b;color:#e7edf5;font:16px/1.65 system-ui,-apple-system,"PingFang TC",sans-serif}main{max-width:1060px;margin:auto;padding:30px 28px}header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #263446;padding-bottom:20px}.brand{font:700 13px monospace;letter-spacing:2px}.brand span{color:#59e0bd;margin-right:12px}a{color:#59e0bd}header a{font-size:14px;text-decoration:none}.intro{padding:42px 0 30px}.eyebrow{font:12px monospace;letter-spacing:2px;color:#9aacc1}h1{font-size:clamp(26px,4vw,40px);letter-spacing:-1px;margin:12px 0}p{color:#a7b6c9;margin:0}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}h2{font-size:16px;margin:0}.count{font:13px monospace;color:#9aacc1}.lesson{display:grid;grid-template-columns:68px 1fr auto;align-items:center;gap:22px;padding:26px;border:1px solid #2b4053;border-radius:12px;background:#111c29;color:inherit;text-decoration:none;transition:background .2s,border-color .2s}.lesson:hover{background:#172737;border-color:#59e0bd}.lesson:focus-visible{outline:3px solid #59e0bd;outline-offset:5px}.number{font:28px monospace;color:#59e0bd}.lesson h3{font-size:20px;margin:0 0 6px;line-height:1.4}.lesson p{font-size:14px}.tags{display:flex;gap:8px;margin-top:12px;font-size:12px}.tags span{padding:2px 8px;background:#203043;border-radius:4px;color:#b8c9dd}.tags .difficulty{color:#ffb16b;background:#352d28}.open{font-size:14px;color:#59e0bd;white-space:nowrap}footer{margin-top:28px;font-size:13px;color:#8295ad}@media(max-width:600px){main{padding:22px 18px}.intro{padding:28px 0}.lesson{grid-template-columns:1fr;gap:10px;padding:20px}.number{font-size:20px}.lesson h3{font-size:19px}.open{margin-top:8px}header{gap:12px}.brand{font-size:11px}}@media(prefers-reduced-motion:reduce){.lesson{transition:none}}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Algo Animation </title>
+    <meta name="description" content="用互動動畫理解演算法，逐步觀察程式碼、搜尋範圍與結果。">
+    <link rel="icon"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Ctext x='5' y='23' fill='%2359e0bd' font-size='21'%3E%5B%5D%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            color-scheme: dark
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            background: #0b111b;
+            color: #e7edf5;
+            font: 16px/1.65 system-ui, -apple-system, "PingFang TC", sans-serif
+        }
+
+        main {
+            max-width: 1060px;
+            margin: auto;
+            padding: 30px 28px
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #263446;
+            padding-bottom: 20px
+        }
+
+        .brand {
+            font: 700 13px monospace;
+            letter-spacing: 2px
+        }
+
+        .brand span {
+            color: #59e0bd;
+            margin-right: 12px
+        }
+
+        a {
+            color: #59e0bd
+        }
+
+        header a {
+            font-size: 14px;
+            text-decoration: none
+        }
+
+        .intro {
+            padding: 42px 0 30px
+        }
+
+        .eyebrow {
+            font: 12px monospace;
+            letter-spacing: 2px;
+            color: #9aacc1
+        }
+
+        h1 {
+            font-size: clamp(26px, 4vw, 40px);
+            letter-spacing: -1px;
+            margin: 12px 0
+        }
+
+        p {
+            color: #a7b6c9;
+            margin: 0
+        }
+
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px
+        }
+
+        h2 {
+            font-size: 16px;
+            margin: 0
+        }
+
+        .count {
+            font: 13px monospace;
+            color: #9aacc1
+        }
+
+        .lesson {
+            display: grid;
+            grid-template-columns: 68px 1fr auto;
+            align-items: center;
+            gap: 22px;
+            padding: 26px;
+            border: 1px solid #2b4053;
+            border-radius: 12px;
+            background: #111c29;
+            color: inherit;
+            text-decoration: none;
+            transition: background .2s, border-color .2s
+        }
+
+        .lesson:hover {
+            background: #172737;
+            border-color: #59e0bd
+        }
+
+        .lesson:focus-visible {
+            outline: 3px solid #59e0bd;
+            outline-offset: 5px
+        }
+
+        .number {
+            font: 28px monospace;
+            color: #59e0bd
+        }
+
+        .lesson h3 {
+            font-size: 20px;
+            margin: 0 0 6px;
+            line-height: 1.4
+        }
+
+        .lesson p {
+            font-size: 14px
+        }
+
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 12px
+        }
+
+        .tags span {
+            padding: 2px 8px;
+            background: #203043;
+            border-radius: 4px;
+            color: #b8c9dd
+        }
+
+        .tags .difficulty {
+            color: #ffb16b;
+            background: #352d28
+        }
+
+        .open {
+            font-size: 14px;
+            color: #59e0bd;
+            white-space: nowrap
+        }
+
+        footer {
+            margin-top: 28px;
+            font-size: 13px;
+            color: #8295ad
+        }
+
+        @media(max-width:600px) {
+            main {
+                padding: 22px 18px
+            }
+
+            .intro {
+                padding: 28px 0
+            }
+
+            .lesson {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 20px
+            }
+
+            .number {
+                font-size: 20px
+            }
+
+            .lesson h3 {
+                font-size: 19px
+            }
+
+            .open {
+                margin-top: 8px
+            }
+
+            header {
+                gap: 12px
+            }
+
+            .brand {
+                font-size: 11px
+            }
+        }
+
+        @media(prefers-reduced-motion:reduce) {
+            .lesson {
+                transition: none
+            }
+        }
+    </style>
 </head>
-<body><main>
-<header><div class="brand"><span>[k]</span> GRINDING ALGORITHM</div><a href="#lessons">瀏覽所有動畫</a></header>
-<section class="intro"><div class="eyebrow">INTERACTIVE LEETCODE NOTES</div><h1>讓演算法，一步一步動起來。</h1><p>選一道題目，搭配程式碼觀察每一步的變化。</p></section>
-<section id="lessons" aria-label="題目列表"><div class="section-head"><h2>所有動畫</h2><span class="count">06 LESSONS</span></div>
-<a class="lesson" style="margin-bottom:14px" href="./0092-reverse-linked-list-ii/"><div class="number">0092</div><div><h3>Reverse Linked List II</h3><p>逐步反轉指定區間的 next 指標，再接回串列兩端。</p><div class="tags"><span class="difficulty">Medium</span><span>Linked List</span><span>指標操作</span></div></div><span class="open">開啟互動動畫</span></a>
-<a class="lesson" style="margin-bottom:14px" href="./0146-lru-cache/"><div class="number">0146</div><div><h3>LRU Cache</h3><p>用雜湊表與雙向串列，觀察命中、移動與淘汰。</p><div class="tags"><span class="difficulty">Medium</span><span>Hash Map</span><span>Doubly Linked List</span></div></div><span class="open">開啟互動動畫</span></a>
-<a class="lesson" style="margin-bottom:14px" href="./0238-product-of-array-except-self/"><div class="number">0238</div><div><h3>Product of Array Except Self</h3><p>兩趟前後綴累乘，不用除法求出除自身以外的乘積。</p><div class="tags"><span class="difficulty">Medium</span><span>Prefix Product</span><span>兩趟掃描</span></div></div><span class="open">開啟互動動畫</span></a>
-<a class="lesson" style="margin-bottom:14px" href="./0560-subarray-sum-equals-k/"><div class="number">0560</div><div><h3>Subarray Sum Equals K</h3><p>用前綴和與雜湊表，計算總和為 k 的連續子陣列。</p><div class="tags"><span class="difficulty">Medium</span><span>Prefix Sum</span><span>Hash Map</span></div></div><span class="open">開啟互動動畫</span></a>
-<a class="lesson" href="./0658-find-k-closest/"><div class="number">0658</div><div><h3>Find K Closest Elements</h3><p>二分搜尋最佳視窗起點，找出最接近目標的 k 個元素。</p><div class="tags"><span class="difficulty">Medium</span><span>Binary Search</span><span>固定長度視窗</span></div></div><span class="open">開啟互動動畫</span></a>
-<a class="lesson" style="margin-top:14px" href="./0853-car-fleet/"><div class="number">0853</div><div><h3>Car Fleet</h3><p>依位置排序，比較抵達時間，逐步觀察車隊形成。</p><div class="tags"><span class="difficulty">Medium</span><span>Sorting</span><span>Greedy · 車隊合併</span></div></div><span class="open">開啟互動動畫</span></a>
-</section>
-</main></body></html>
+
+<body>
+    <main>
+        <header>
+            <div class="brand"><span>[k]</span> ALGORITHM Animation</div><a href="#lessons">瀏覽所有動畫</a>
+        </header>
+        <section class="intro">
+            <div class="eyebrow">INTERACTIVE NOTES</div>
+            <h1>讓演算法，一步一步動起來。</h1>
+            <p>選一道題目，搭配程式碼觀察每一步的變化。</p>
+        </section>
+        <section id="lessons" aria-label="題目列表">
+            <div class="section-head">
+                <h2>所有動畫</h2><span class="count">09 LESSONS</span>
+            </div>
+            <a class="lesson" style="margin-bottom:14px" href="./0092-reverse-linked-list-ii/">
+                <div class="number">0092</div>
+                <div>
+                    <h3>Reverse Linked List II</h3>
+                    <p>逐步反轉指定區間的 next 指標，再接回串列兩端。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Linked List</span><span>指標操作</span>
+                    </div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-bottom:14px" href="./0146-lru-cache/">
+                <div class="number">0146</div>
+                <div>
+                    <h3>LRU Cache</h3>
+                    <p>用雜湊表與雙向串列，觀察命中、移動與淘汰。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Hash Map</span><span>Doubly Linked
+                            List</span></div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-bottom:14px" href="./0238-product-of-array-except-self/">
+                <div class="number">0238</div>
+                <div>
+                    <h3>Product of Array Except Self</h3>
+                    <p>兩趟前後綴累乘，不用除法求出除自身以外的乘積。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Prefix Product</span><span>兩趟掃描</span>
+                    </div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-bottom:14px" href="./0394-decode-string/">
+                <div class="number">0394</div>
+                <div>
+                    <h3>Decode String</h3>
+                    <p>逐字掃描，用堆疊保存外層狀態，展開巢狀編碼。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Stack</span><span>巢狀字串</span></div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-bottom:14px" href="./0560-subarray-sum-equals-k/">
+                <div class="number">0560</div>
+                <div>
+                    <h3>Subarray Sum Equals K</h3>
+                    <p>用前綴和與雜湊表，計算總和為 k 的連續子陣列。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Prefix Sum</span><span>Hash Map</span>
+                    </div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" href="./0658-find-k-closest/">
+                <div class="number">0658</div>
+                <div>
+                    <h3>Find K Closest Elements</h3>
+                    <p>二分搜尋最佳視窗起點，找出最接近目標的 k 個元素。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Binary
+                            Search</span><span>固定長度視窗</span></div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-top:14px" href="./0739-daily-temperatures/">
+                <div class="number">0739</div>
+                <div>
+                    <h3>Daily Temperatures</h3>
+                    <p>用單調堆疊等待更暖的一天，逐步回填索引差。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Monotonic
+                            Stack</span><span>等待天數</span></div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-top:14px" href="./0853-car-fleet/">
+                <div class="number">0853</div>
+                <div>
+                    <h3>Car Fleet</h3>
+                    <p>依位置排序，比較抵達時間，逐步觀察車隊形成。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Sorting</span><span>Greedy ·
+                            車隊合併</span></div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+            <a class="lesson" style="margin-top:14px" href="./0875-koko-eating-bananas/">
+                <div class="number">0875</div>
+                <div>
+                    <h3>Koko Eating Bananas</h3>
+                    <p>二分搜尋最小速度，逐堆向上取整計算時間。</p>
+                    <div class="tags"><span class="difficulty">Medium</span><span>Binary Search</span><span>答案二分</span>
+                    </div>
+                </div><span class="open">開啟互動動畫</span>
+            </a>
+        </section>
+    </main>
+</body>
+
+</html>
