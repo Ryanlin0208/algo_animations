@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>875 · Koko Eating Bananas｜演算法動畫</title>
+<meta name="description" content="二分搜尋吃香蕉的速度，逐堆計算向上取整的時間。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">BINARY SEARCH ON ANSWER / 875</span></header>
+  <section class="heading"><div><p class="eyebrow">LEETCODE 875 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Koko Eating Bananas</h1><p>二分搜尋速度，找到<span class="accent">能在 h 小時內吃完的最小值</span>。</p></div><div class="complexity">TIME <b>O(n log M)</b><small>M = max(piles) · 輔助空間 O(1)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">香蕉堆 piles<input id="piles" value="3, 6, 7, 11" autocomplete="off"></label><label>時限 h<input id="h" type="number" min="1" max="1000000000" value="8" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="tight">h 等於堆數</button><button type="button" data-example="loose">速度只需 1</button><button type="button" data-example="single">單一香蕉堆</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="香蕉速度搜尋動畫">
+      <div class="panel-head"><span>01 / 搜尋速度與計算時間</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>l</small><b id="l"></b></div><div><small>r</small><b id="r"></b></div><div><small>m</small><b id="m"></b></div><div><small>ans</small><b id="ans"></b></div></div>
+      <div class="range-section"><div id="range-label"></div><div class="speed-track"><div id="interval"></div><span id="mid-marker"></span></div><div class="range-ends"><span>1 根／小時</span><span id="max-speed"></span></div></div>
+      <div class="chart-scroll"><div id="chart" class="temp-chart"></div></div>
+      <div class="legend"><span><i class="mint"></i>本輪已計算</span><span><i class="orange"></i>目前香蕉堆</span></div>
+      <div class="comparison"><div><small>目前測試 m 的 hours</small><strong id="hours">—</strong><span id="progress"></span></div><b id="operator">?</b><div><small>時限 h</small><strong id="limit"></strong><span>小時</span></div></div>
+      <p class="signed-note">每小時只能吃一堆，剩餘時間不能移到另一堆。因此每堆分別向上取整，再加總。圖下顯示每堆所需小時。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼可以二分搜尋速度？</summary><h2>速度越快，所需時間不會增加。</h2><p>速度 m 可行時，先保存 ans，再令 r = m − 1，尋找更慢的可行速度。不可行時，令 l = m + 1，排除所有不比 m 快的速度。</p><p>每堆的時間為 <code>(i + m − 1) // m</code>，等同向上取整 i / m。例如 7 根、速度 3，需 3 小時。</p><p>l &gt; r 時結束，回傳 ans。最後測試的 m 可能不可行，不能直接回傳 m。圖表與 hours 顯示最後測試狀態，答案由 ans 保存。</p><p>時間 O(n log M)，M = max(piles)，輔助空間 O(1)。動畫另存快照。支援 1–20 堆，每堆最多 1,000,000；h 至少等於堆數，每堆至少需要一小時。</p></details></aside>
+  </div>
+  <footer><span>875 / 可行就記錄答案，再嘗試更小速度。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
