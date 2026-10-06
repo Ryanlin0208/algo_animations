@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1011 · Capacity to Ship Packages｜演算法動畫</title>
+<meta name="description" content="二分搜尋最低載重，依原順序裝載包裹並模擬運送天數。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">A</span> ALGO ANIMATION</a><span class="edition">BINARY SEARCH ON ANSWER / 1011</span></header>
+  <section class="heading"><div><p class="eyebrow">ALGO 1011 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Capacity to Ship Packages</h1><p>依原順序裝船，尋找<span class="accent">能在指定天數內送完的最小載重</span>。</p></div><div class="complexity">TIME <b>O(n log S)</b><small>S = sum(weights) · 輔助空間 O(1)</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">包裹 weights<input id="weights" value="1, 2, 3, 4, 5, 6, 7, 8, 9, 10" autocomplete="off"></label><label>天數 days<input id="days" type="number" min="1" value="5" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典範例</button><button type="button" data-example="one">一天送完</button><button type="button" data-example="many">每天一件</button><button type="button" data-example="equal">剛好裝滿</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="包裹載重搜尋動畫">
+      <div class="panel-head"><span>01 / 載重搜尋與裝船模擬</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>left</small><b id="left"></b></div><div><small>right</small><b id="right"></b></div><div><small>mid</small><b id="mid"></b></div><div><small>ans</small><b id="ans"></b></div></div>
+      <div class="range-section"><div id="range-label"></div><div class="speed-track"><div id="interval"></div><span id="mid-marker"></span></div><div class="range-ends"><span id="min-capacity"></span><span id="max-capacity"></span></div></div>
+      <div class="array-scroll"><div id="packages" class="array"></div></div>
+      <div class="legend"><span><i class="mint"></i>本輪已裝載</span><span><i class="orange"></i>目前包裹</span></div>
+      <div class="boats-heading">每日裝載 <span id="load-status"></span></div><div id="boats" class="boats"></div>
+      <div class="comparison"><div><small>days_needed</small><strong id="needed">—</strong><span id="progress"></span></div><b id="operator">?</b><div><small>允許天數</small><strong id="limit"></strong><span id="current-load"></span></div></div>
+      <p class="signed-note">包裹不可重新排序。只有 current + weight &gt; mid 才換天；剛好等於載重時仍可裝入。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼搜尋這個範圍？</summary><h2>至少裝得下最重的一件。</h2><p>left = max(weights)，right = sum(weights)。下界確保每一件都能裝上船，上界能在一天內送完。</p><p>給定 mid 後，依原順序盡量裝滿每天的船。下一件會超重時，先增加 days_needed，再把 current 清零，最後裝入該件。</p><p>days_needed ≤ days 時，保存 ans = mid，往更小的載重搜尋；否則提高 left。載重增加不會讓所需天數增加，因此可以二分搜尋。</p><p>時間 O(n log S)，S = sum(weights)，輔助空間 O(1)。動畫另存快照。支援 1–20 件、每件 1–100，1 ≤ days ≤ 件數。</p></details></aside>
+  </div>
+  <footer><span>1011 / 保持包裹順序，超重才換天。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
