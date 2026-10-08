@@ -223,9 +223,9 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
         </section>
         <section id="lessons" aria-label="題目列表">
             <div class="section-head">
-                <h2>所有動畫</h2><span class="count">11 LESSONS</span>
+                <h2>所有動畫</h2><span class="count" id="lesson-count">11 個動畫</span>
             </div>
-            <a class="lesson" style="margin-bottom:14px" href="./0092-reverse-linked-list-ii/">
+            <a class="lesson" href="./0092-reverse-linked-list-ii/">
                 <div class="number">0092</div>
                 <div>
                     <h3>Reverse Linked List II</h3>
@@ -234,7 +234,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-bottom:14px" href="./0146-lru-cache/">
+            <a class="lesson" href="./0146-lru-cache/">
                 <div class="number">0146</div>
                 <div>
                     <h3>LRU Cache</h3>
@@ -252,7 +252,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                 </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-bottom:14px" href="./0238-product-of-array-except-self/">
+            <a class="lesson" href="./0238-product-of-array-except-self/">
                 <div class="number">0238</div>
                 <div>
                     <h3>Product of Array Except Self</h3>
@@ -261,7 +261,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-bottom:14px" href="./0394-decode-string/">
+            <a class="lesson" href="./0394-decode-string/">
                 <div class="number">0394</div>
                 <div>
                     <h3>Decode String</h3>
@@ -269,7 +269,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     <div class="tags"><span class="difficulty">Medium</span><span>Stack</span><span>巢狀字串</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-bottom:14px" href="./0560-subarray-sum-equals-k/">
+            <a class="lesson" href="./0560-subarray-sum-equals-k/">
                 <div class="number">0560</div>
                 <div>
                     <h3>Subarray Sum Equals K</h3>
@@ -287,7 +287,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             Search</span><span>固定長度視窗</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-top:14px" href="./0739-daily-temperatures/">
+            <a class="lesson" href="./0739-daily-temperatures/">
                 <div class="number">0739</div>
                 <div>
                     <h3>Daily Temperatures</h3>
@@ -296,7 +296,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             Stack</span><span>等待天數</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-top:14px" href="./0853-car-fleet/">
+            <a class="lesson" href="./0853-car-fleet/">
                 <div class="number">0853</div>
                 <div>
                     <h3>Car Fleet</h3>
@@ -305,7 +305,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             車隊合併</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" style="margin-top:14px" href="./0875-koko-eating-bananas/">
+            <a class="lesson" href="./0875-koko-eating-bananas/">
                 <div class="number">0875</div>
                 <div>
                     <h3>Koko Eating Bananas</h3>
@@ -314,8 +314,25 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-        <a class="lesson" href="./1011-capacity-to-ship-packages/"><div class="number">1011</div><div><h3>Capacity to Ship Packages</h3><p>依序裝船、超重換天，二分搜尋最小載重。</p><div class="tags"><span class="difficulty">Medium</span><span>Binary Search</span><span>裝載模擬</span></div></div><span class="open">開啟互動動畫</span></a></section>
+            <a class="lesson" href="./1011-capacity-to-ship-packages/">
+                <div class="number">1011</div>
+                <div>
+                    <h3>Capacity to Ship Packages</h3>
+                    <p>依序裝船、超重換天，二分搜尋最小載重。</p>
+                    <div class="tags">
+                        <span class="difficulty">Medium</span>
+                        <span>Binary Search</span>
+                        <span>裝載模擬</span>
+                    </div>
+                </div>
+                <span class="open">開啟互動動畫</span>
+            </a>
+        </section>
     </main>
+    <script>
+        const lessonCount = document.querySelectorAll('#lessons > a.lesson').length;
+        document.getElementById('lesson-count').textContent = `${lessonCount} 個動畫`;
+    </script>
 </body>
 
 </html>
