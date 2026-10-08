@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>208 · Implement Trie · Prefix Tree｜演算法動畫</title>
+<meta name="description" content="用圓圈節點與字母連線，探索 Trie 插入、完整搜尋與前綴搜尋。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script defer src="algorithm.js"></script><script defer src="app.js"></script>
+</head>
+<body>
+<main>
+  <header><a class="brand" href="../"><span class="mark">A</span> ALGO ANIMATION</a><span class="edition">TRIE / PREFIX TREE / 208</span></header>
+  <section class="heading"><div><p class="eyebrow">ALGO 208 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Implement Trie · Prefix Tree</h1><p>沿著字母走過圓圈節點，理解<span class="accent">完整單字與前綴的差別</span>。</p></div><div class="complexity">PER OPERATION <b>O(L)</b><small>L = 本次字串長度</small></div></section>
+  <form id="inputs" class="inputs"><label class="array-input">操作序列（JSON）<textarea id="operations" rows="3" spellcheck="false">[["insert","apple"],["insert","ape"],["search","app"],["startsWith","app"],["insert","app"],["search","app"],["search","bat"]]</textarea></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="branch">共用前綴與分支</button><button type="button" data-example="classic">完整單字 vs 前綴</button><button type="button" data-example="duplicate">重複插入</button><button type="button" data-example="missing">空樹查詢</button></div><p id="error" role="alert"></p></form>
+  <div class="workspace">
+    <section class="panel visualization" aria-label="Trie 圓圈節點動畫">
+      <div class="panel-head"><span>01 / Trie 節點探索</span><span id="phase" class="tag">INITIALIZE</span></div>
+      <div class="stats"><div><small>node</small><b id="node"></b></div><div><small>char</small><b id="char"></b></div><div><small>節點數</small><b id="size"></b></div></div>
+      <div id="operation" class="operation"></div><div id="word" class="word"></div>
+      <div class="graph-scroll"><svg id="graph" role="img" aria-label="Trie 節點與字母連線"></svg></div>
+      <div class="legend"><span><i class="mint"></i>本次已走路徑</span><span><i class="orange"></i>目前 node</span><span class="end-legend">◎ 完整單字結尾</span></div>
+      <div id="node-detail" class="node-detail"></div>
+      <p class="signed-note">圓圈內為節點編號；線上的字母串起來就是前綴。雙圈 = is_end 為 True，ROOT 是空前綴。圖可捲動查看。</p>
+      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
+      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
+      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
+    </section>
+    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：search 與 startsWith 有何不同？</summary><h2>走得到，不一定是完整單字。</h2><p>插入 apple 後，app 的路徑存在，但尚未標記為單字結尾。此時 search("app") 是 False，startsWith("app") 是 True。再插入 app，只需把原節點 is_end 設為 True。</p><p>每個 TrieNode 有 children 字典與 is_end 布林值。insert 缺邊才建立節點，查詢缺邊直接回傳 False；三種操作都從 root 開始。</p><p>單次操作平均時間 O(L)，L 為字串長度。總節點空間 O(S)，S 為所有插入字串的總長度上界。動畫另存每一步快照。</p><p>動畫最多 16 筆操作，每個字串 1–10 個小寫英文字母。null 代表 insert 沒有回傳值；輸出不含建構子。</p><p>本頁 Python 為依題目規格撰寫的教學版本，使用明確的 TrieNode，方便與圓圈圖對照。</p></details></aside>
+  </div>
+  <footer><span>208 / 共用前綴，雙圈標記完整單字。</span><span>原生 HTML · CSS · JavaScript</span></footer>
+</main>
+</body></html>
