@@ -1,3 +1,44 @@
-const assert=require('node:assert/strict'),trace=require('./algorithm.js');let cases=0;
-for(let a=0;a<=5;a++)for(let b=0;b<=5;b++)for(let c=0;c<=5;c++){const tasks=[...'A'.repeat(a)+'B'.repeat(b)+'C'.repeat(c)];if(!tasks.length)continue;for(let n=0;n<=6;n++){const counts=[a,b,c].filter(Boolean),m=Math.max(...counts),expected=Math.max(tasks.length,(m-1)*(n+1)+counts.filter(v=>v===m).length);const frames=trace(tasks,n),last=frames.at(-1);assert.equal(last.result,expected);assert.equal(last.rounds.reduce((s,r)=>s+r.used,0),tasks.length);assert.equal(last.rounds.reduce((s,r)=>s+r.duration,0),expected);assert.equal(last.rounds.at(-1).idle,0);assert(last.rounds.every(r=>r.used<=n+1));cases++;}}
-for(const args of [[[],0],[['a'],1],[['A'],-1],[['A'],11]])assert.throws(()=>trace(...args));console.log(`PASS: ${cases} frequency/cooldown cases, minimum-time oracle, round accounting and final no-idle rule.`);
+const assert = require('node:assert/strict');
+const trace = require('./algorithm.js');
+let cases = 0;
+for (let a = 0; a <= 5; a++) {
+  for (let b = 0; b <= 5; b++) {
+    for (let c = 0; c <= 5; c++) {
+      const tasks = [...('A'.repeat(a) + 'B'.repeat(b) + 'C'.repeat(c))];
+      if (!tasks.length) continue;
+      for (let n = 0; n <= 6; n++) {
+        const counts = [a, b, c].filter(Boolean);
+        const m = Math.max(...counts);
+        const expected = Math.max(
+          tasks.length,
+          (m - 1) * (n + 1) + counts.filter((v) => v === m).length,
+        );
+        const frames = trace(tasks, n);
+        const last = frames.at(-1);
+        assert.equal(last.result, expected);
+        assert.equal(
+          last.rounds.reduce((s, r) => s + r.used, 0),
+          tasks.length,
+        );
+        assert.equal(
+          last.rounds.reduce((s, r) => s + r.duration, 0),
+          expected,
+        );
+        assert.equal(last.rounds.at(-1).idle, 0);
+        assert(last.rounds.every((r) => r.used <= n + 1));
+        cases++;
+      }
+    }
+  }
+}
+for (const args of [
+  [[], 0],
+  [['a'], 1],
+  [['A'], -1],
+  [['A'], 11],
+]) {
+  assert.throws(() => trace(...args));
+}
+console.log(
+  `PASS: ${cases} frequency/cooldown cases, minimum-time oracle, round accounting and final no-idle rule.`,
+);

@@ -1,34 +1,165 @@
 <!doctype html>
 <html lang="zh-Hant">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>767 · Reorganize String｜演算法動畫</title>
-<meta name="description" content="用負頻率堆積與暫存字元，避免相鄰字元重複。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="../assets/theme.css">
-<script defer src="algorithm.js"></script><script defer src="app.js"></script>
-</head>
-<body>
-<main>
-  <header><a class="brand" href="../"><span class="mark">A</span> ALGO ANIMATION</a><span class="edition">HEAP / GREEDY / 767</span></header>
-  <section class="heading"><div><p class="eyebrow">ALGO 767 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Reorganize String</h1><p>優先使用最多的字元，並<span class="accent">暫扣上一輪字元</span>。</p></div><div class="complexity">TIME <b>O(n log k)</b><small>k = 不同字元數；k = 1 時 O(n)</small></div></section>
-  <form id="inputs" class="inputs"><label class="array-input">字串 s<input id="s" value="aaabbc" maxlength="30" autocomplete="off" spellcheck="false"></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">一般範例</button><button type="button" data-example="impossible">無法重組</button><button type="button" data-example="tie">同頻率</button><button type="button" data-example="single">單一字元</button></div><p id="error" role="alert"></p></form>
-  <div class="workspace">
-    <section class="panel visualization" aria-label="字串重組動畫">
-      <div class="panel-head"><span>01 / 堆積與暫存字元</span><span id="phase" class="tag">INITIALIZE</span></div>
-      <div class="stats"><div><small>char</small><b id="char"></b></div><div><small>freq</small><b id="freq"></b></div><div><small>已排入</small><b id="length"></b></div></div>
-      <div class="heap-area"><div class="section-label">heap · 依取出優先序排列 <span>以下不是 heapq 的內部陣列順序</span></div><div id="heap" class="heap-cards"></div></div>
-      <div class="decode-panels"><div><div class="section-label">原始 Counter</div><div id="counts" class="string-box"></div></div><div><div class="section-label">暫存變數</div><div id="held" class="string-box formula"></div></div></div>
-      <div class="heap-area"><div class="section-label">ans</div><div id="answer" class="heap-cards"></div></div>
-      <p class="signed-note">先 pop、使用字元，再放回上一輪字元。freq 與 prev_count 為負頻率；右側 Python 高亮顯示目前執行行。</p>
-      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
-      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
-      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
-    </section>
-    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼暫扣上一輪字元？</summary><h2>讓剛使用的字元不參與下一次 pop。</h2><p>heapq 是最小堆積，儲存 (-freq, char) 就能先取出出現最多的字元。負頻率相同時，Python tuple 會按字母排序。</p><p>每輪先 pop 並加入 ans，再放回上輪的剩餘字元，最後更新 prev_count、prev_char。這個順序避免連續取到相同字元。</p><p>放回後、覆寫暫存前，畫面上的舊暫存變數仍有值；它不是另一份字元。兩個 prev 變數分兩行更新，動畫也保留這個中間狀態。</p><p>若堆積已空而 ans 長度不足，就回傳空字串。圖上保留的 ans 是部分結果，不是回傳值。</p><p>n 為字串長度，k 為不同字元數。時間 O(n log k)（k = 1 時 O(n)），不含答案的輔助空間 O(k)。動畫支援 1–30 個小寫字母。</p></details></aside>
-  </div>
-  <footer><span>767 / 先取出、再放回、最後暫扣。</span><span>原生 HTML · CSS · JavaScript</span></footer>
-</main>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>767 · Reorganize String｜演算法動畫</title>
+    <meta
+      name="description"
+      content="用負頻率堆積與暫存字元，避免相鄰字元重複。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">HEAP / GREEDY / 767</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 767 <span>MEDIUM</span></p>
+          <h1><a class="back-home" href="../">題目目錄</a>Reorganize String</h1>
+          <p>
+            優先使用最多的字元，並<span class="accent">暫扣上一輪字元</span>。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n log k)</b><small>k = 不同字元數；k = 1 時 O(n)</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >字串 s<input
+            id="s"
+            value="aaabbc"
+            maxlength="30"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">一般範例</button
+          ><button type="button" data-example="impossible">無法重組</button
+          ><button type="button" data-example="tie">同頻率</button
+          ><button type="button" data-example="single">單一字元</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="字串重組動畫">
+          <div class="panel-head">
+            <span>01 / 堆積與暫存字元</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>char</small><b id="char"></b></div>
+            <div><small>freq</small><b id="freq"></b></div>
+            <div><small>已排入</small><b id="length"></b></div>
+          </div>
+          <div class="heap-area">
+            <div class="section-label">
+              heap · 依取出優先序排列 <span>以下不是 heapq 的內部陣列順序</span>
+            </div>
+            <div id="heap" class="heap-cards"></div>
+          </div>
+          <div class="decode-panels">
+            <div>
+              <div class="section-label">原始 Counter</div>
+              <div id="counts" class="string-box"></div>
+            </div>
+            <div>
+              <div class="section-label">暫存變數</div>
+              <div id="held" class="string-box formula"></div>
+            </div>
+          </div>
+          <div class="heap-area">
+            <div class="section-label">ans</div>
+            <div id="answer" class="heap-cards"></div>
+          </div>
+          <p class="signed-note">
+            先 pop、使用字元，再放回上一輪字元。freq 與 prev_count
+            為負頻率；右側 Python 高亮顯示目前執行行。
+          </p>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：為什麼暫扣上一輪字元？</summary>
+            <h2>讓剛使用的字元不參與下一次 pop。</h2>
+            <p>
+              heapq 是最小堆積，儲存 (-freq, char)
+              就能先取出出現最多的字元。負頻率相同時，Python tuple
+              會按字母排序。
+            </p>
+            <p>
+              每輪先 pop 並加入 ans，再放回上輪的剩餘字元，最後更新
+              prev_count、prev_char。這個順序避免連續取到相同字元。
+            </p>
+            <p>
+              放回後、覆寫暫存前，畫面上的舊暫存變數仍有值；它不是另一份字元。兩個
+              prev 變數分兩行更新，動畫也保留這個中間狀態。
+            </p>
+            <p>
+              若堆積已空而 ans 長度不足，就回傳空字串。圖上保留的 ans
+              是部分結果，不是回傳值。
+            </p>
+            <p>
+              n 為字串長度，k 為不同字元數。時間 O(n log k)（k = 1 時
+              O(n)），不含答案的輔助空間 O(k)。動畫支援 1–30 個小寫字母。
+            </p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>767 / 先取出、再放回、最後暫扣。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>

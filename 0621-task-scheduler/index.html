@@ -1,35 +1,165 @@
 <!doctype html>
 <html lang="zh-Hant">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>621 · Task Scheduler｜演算法動畫</title>
-<meta name="description" content="以頻率堆積模擬冷卻週期，計算工作與 idle 時槽。">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="../assets/theme.css">
-<script defer src="algorithm.js"></script><script defer src="app.js"></script>
-</head>
-<body>
-<main>
-  <header><a class="brand" href="../"><span class="mark">A</span> ALGO ANIMATION</a><span class="edition">HEAP / GREEDY / 621</span></header>
-  <section class="heading"><div><p class="eyebrow">ALGO 621 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>Task Scheduler</h1><p>每輪最多執行 n + 1 種任務，<span class="accent">最後一輪不補 idle</span>。</p></div><div class="complexity">TIME <b>O(T log k)</b><small>T = 任務數；k = 種類數，k = 1 時 O(T)</small></div></section>
-  <form id="inputs" class="inputs"><label class="array-input">tasks（A–Z）<input id="tasks" value="A, A, A, B, B, B" autocomplete="off"></label><label>冷卻 n<input id="n" type="number" min="0" max="10" value="2" required></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">需要 idle</button><button type="button" data-example="zero">無冷卻</button><button type="button" data-example="diverse">多種任務</button><button type="button" data-example="single">單一種類</button></div><p id="error" role="alert"></p></form>
-  <div class="workspace">
-    <section class="panel visualization" aria-label="任務排程動畫">
-      <div class="panel-head"><span>01 / 冷卻週期與工作時槽</span><span id="phase" class="tag">INITIALIZE</span></div>
-      <div class="stats"><div><small>time</small><b id="time"></b></div><div><small>used</small><b id="used"></b></div><div><small>freq</small><b id="freq"></b></div><div><small>n + 1</small><b id="cycle"></b></div></div>
-      <div class="heap-area"><div class="section-label">heap · 依取出優先序排列</div><div id="heap" class="heap-cards"></div></div>
-      <div class="heap-area"><div class="section-label">temp · 本輪已用、等待放回</div><div id="temp" class="heap-cards"></div></div>
-      <div class="heap-area"><div class="section-label" id="round-label"></div><div id="slots" class="heap-cards"></div></div>
-      <div id="history" class="history"></div>
-      <p class="signed-note">本程式只儲存頻率，圖中「工作」不指定任務字母。temp 放回 heap 後仍保留數值，不能重複計算剩餘任務。</p>
-      <div class="explanation" aria-live="polite"><span id="step-label">STEP 01</span><h2 id="title"></h2><p id="note"></p><output id="result"></output></div>
-      <div class="controls"><button id="reset" title="重設">重設</button><button id="prev" title="上一步">上一步</button><button id="play" class="primary">播放動畫</button><button id="next">下一步</button><label class="speed">速度<select id="speed"><option value="1800">0.5×</option><option value="900" selected>1×</option><option value="450">2×</option></select></label></div>
-      <div class="timeline"><input id="seek" aria-label="動畫步驟" type="range" min="0" value="0"><span id="counter"></span></div>
-    </section>
-    <aside class="panel code-panel"><div class="panel-head"><span>02 / 同步程式碼</span><span class="tag">PYTHON</span></div><pre id="code" aria-label="原始 Python 程式碼"></pre><details class="insight"><summary>原理說明：為什麼每輪計 n + 1？</summary><h2>同輪用過的任務，先放進 temp。</h2><p>每輪優先取出最多次的任務，最多執行 n + 1 種。用過但仍有剩餘的頻率暫存，整輪結束才放回堆積，因此不會在同輪取到同一種類。</p><p>放回後 heap 仍非空，就計入完整 n + 1 時槽，不足的部分是 idle。若 heap 已空，只需增加 used，最後不用額外等待冷卻。</p><p>heap 只有數字，無法從這份程式直接還原任務字母的排程；本動畫忠實顯示工作／idle 與頻率狀態。</p><p>已補上原程式缺少的 import heapq。T 為任務數，k 為種類數，時間 O(T log k)（k = 1 時 O(T)），演算法輔助空間 O(k)；動畫另存快照。</p><p>輸入限制：1–30 個 A–Z 任務，冷卻 n 為 0–10。</p></details></aside>
-  </div>
-  <footer><span>621 / 每輪暫存，最後一輪不補等待。</span><span>原生 HTML · CSS · JavaScript</span></footer>
-</main>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>621 · Task Scheduler｜演算法動畫</title>
+    <meta
+      name="description"
+      content="以頻率堆積模擬冷卻週期，計算工作與 idle 時槽。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">HEAP / GREEDY / 621</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 621 <span>MEDIUM</span></p>
+          <h1><a class="back-home" href="../">題目目錄</a>Task Scheduler</h1>
+          <p>
+            每輪最多執行 n + 1 種任務，<span class="accent"
+              >最後一輪不補 idle</span
+            >。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(T log k)</b
+          ><small>T = 任務數；k = 種類數，k = 1 時 O(T)</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >tasks（A–Z）<input
+            id="tasks"
+            value="A, A, A, B, B, B"
+            autocomplete="off" /></label
+        ><label
+          >冷卻 n<input
+            id="n"
+            type="number"
+            min="0"
+            max="10"
+            value="2"
+            required /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">需要 idle</button
+          ><button type="button" data-example="zero">無冷卻</button
+          ><button type="button" data-example="diverse">多種任務</button
+          ><button type="button" data-example="single">單一種類</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="任務排程動畫">
+          <div class="panel-head">
+            <span>01 / 冷卻週期與工作時槽</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>time</small><b id="time"></b></div>
+            <div><small>used</small><b id="used"></b></div>
+            <div><small>freq</small><b id="freq"></b></div>
+            <div><small>n + 1</small><b id="cycle"></b></div>
+          </div>
+          <div class="heap-area">
+            <div class="section-label">heap · 依取出優先序排列</div>
+            <div id="heap" class="heap-cards"></div>
+          </div>
+          <div class="heap-area">
+            <div class="section-label">temp · 本輪已用、等待放回</div>
+            <div id="temp" class="heap-cards"></div>
+          </div>
+          <div class="heap-area">
+            <div class="section-label" id="round-label"></div>
+            <div id="slots" class="heap-cards"></div>
+          </div>
+          <div id="history" class="history"></div>
+          <p class="signed-note">
+            本程式只儲存頻率，圖中「工作」不指定任務字母。temp 放回 heap
+            後仍保留數值，不能重複計算剩餘任務。
+          </p>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：為什麼每輪計 n + 1？</summary>
+            <h2>同輪用過的任務，先放進 temp。</h2>
+            <p>
+              每輪優先取出最多次的任務，最多執行 n + 1
+              種。用過但仍有剩餘的頻率暫存，整輪結束才放回堆積，因此不會在同輪取到同一種類。
+            </p>
+            <p>
+              放回後 heap 仍非空，就計入完整 n + 1 時槽，不足的部分是 idle。若
+              heap 已空，只需增加 used，最後不用額外等待冷卻。
+            </p>
+            <p>
+              heap
+              只有數字，無法從這份程式直接還原任務字母的排程；本動畫忠實顯示工作／idle
+              與頻率狀態。
+            </p>
+            <p>
+              已補上原程式缺少的 import heapq。T 為任務數，k 為種類數，時間 O(T
+              log k)（k = 1 時 O(T)），演算法輔助空間 O(k)；動畫另存快照。
+            </p>
+            <p>輸入限制：1–30 個 A–Z 任務，冷卻 n 為 0–10。</p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>621 / 每輪暫存，最後一輪不補等待。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>

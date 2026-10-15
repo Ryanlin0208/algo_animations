@@ -26,6 +26,17 @@
 
 GitHub Pages 由 `main` 分支根目錄（/）發布。修改後 commit 並 `git push origin main`，約 1 分鐘後網站自動更新。
 
+## 程式風格
+
+依循 [Google JavaScript](https://google.github.io/styleguide/jsguide.html) 與 [HTML/CSS](https://google.github.io/styleguide/htmlcssguide.html) 風格指南：縮排 2 格、每行 80 字、單引號、必加分號、`const`/`let`。設定檔：`.editorconfig`、`.prettierrc.json`（排版）、`eslint.config.mjs`（規則）。
+
+```sh
+npx prettier@3.3.3 --check .
+npx eslint@9.9.1 -c eslint.config.mjs '*/*.js' '*/*.cjs'
+```
+
+`algorithm.js` 裡的 snake_case 變數名稱刻意對應旁邊的 Python 程式碼，因此在這些檔案關閉 camelcase 檢查。
+
 ## 檔案結構
 
 ```text
