@@ -1,0 +1,603 @@
+/* Network ports: category colours and the ten scenes. */
+.cat-network {
+  --c: var(--purple);
+}
+
+.cat-web {
+  --c: var(--blue);
+}
+
+.cat-dev {
+  --c: var(--green);
+}
+
+.cat-db {
+  --c: var(--amber);
+}
+
+/* Shared scene parts. */
+.scene .wire {
+  fill: none;
+}
+
+.lock,
+.eye {
+  color: var(--c);
+}
+
+.prompt,
+.huh {
+  fill: var(--c);
+}
+
+/* 22 SSH: packets ride a locked tunnel. */
+.tunnel {
+  fill: color-mix(in srgb, var(--c) 18%, transparent);
+  stroke: var(--c);
+  stroke-width: 2.5;
+}
+
+.pkt {
+  fill: var(--c);
+}
+
+/* 53 DNS: a name goes in, an address comes back. */
+.ask {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+.ask-text {
+  fill: var(--ink);
+}
+
+.answer {
+  fill: var(--c);
+}
+
+.answer-text {
+  fill: #160a33;
+}
+
+.bookmark {
+  fill: var(--c);
+}
+
+/* 80 / 443: what an eavesdropper sees on the wire. */
+.payload rect {
+  fill: var(--bg);
+  stroke: var(--c);
+  stroke-width: 2;
+}
+
+.payload text {
+  fill: var(--c);
+}
+
+.pupil {
+  fill: var(--c);
+}
+
+.mini-lock {
+  color: var(--c);
+}
+
+.s2,
+.s3 {
+  opacity: 0;
+}
+
+/* 3000: a loop that never leaves your machine. */
+.window {
+  stroke: var(--c);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.loop {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2;
+}
+
+.host {
+  fill: var(--c);
+}
+
+.orbit {
+  fill: var(--ink);
+  offset-path: path('M86 12h140a20 20 0 0 1 0 40H86a20 20 0 0 1 0-40z');
+  offset-rotate: 0deg;
+}
+
+/* 8080: :80 is busy, the request goes next door. */
+.taken {
+  fill: var(--muted);
+}
+
+.box {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2;
+}
+
+.port-80 {
+  fill: var(--line);
+}
+
+.port-80-text {
+  fill: var(--muted);
+}
+
+.port-8080 {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2;
+}
+
+.port-8080-text {
+  fill: var(--ink);
+}
+
+.route,
+.route-head {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 3306 / 5432: rows land in a table. */
+.table .frame {
+  fill: none;
+  stroke: var(--c);
+  stroke-width: 2.5;
+}
+
+.table .grid {
+  stroke: var(--c);
+  stroke-width: 2;
+}
+
+.cell-row {
+  fill: var(--c);
+}
+
+.rank rect {
+  fill: var(--c);
+}
+
+.rank text {
+  fill: #2a1c00;
+}
+
+/* 6379: lightning-fast reads from memory. */
+.bolt {
+  fill: var(--c);
+}
+
+.fast {
+  fill: var(--c);
+}
+
+.zip {
+  fill: var(--c);
+}
+
+.ram-label {
+  fill: var(--icon);
+}
+
+.ram {
+  fill: none;
+  stroke: var(--icon);
+  stroke-width: 2.5;
+}
+
+.ram-chips {
+  fill: var(--icon);
+}
+
+.ram-pins {
+  stroke: var(--icon);
+  stroke-width: 2;
+}
+
+/* 27017: a JSON document joins the stack. */
+.json text {
+  fill: var(--c);
+}
+
+.json path {
+  stroke: var(--c);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.doc {
+  fill: var(--row);
+  stroke: var(--icon);
+  stroke-width: 2.5;
+}
+
+.doc-mark {
+  fill: var(--icon);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pkt {
+    animation: travel-tunnel 2.4s linear infinite;
+  }
+
+  .pkt:nth-of-type(2) {
+    animation-delay: -0.8s;
+  }
+
+  .pkt:nth-of-type(3) {
+    animation-delay: -1.6s;
+  }
+
+  .lock {
+    animation: glow 2.4s ease-in-out infinite;
+  }
+
+  .prompt {
+    animation: blink 1s steps(1) infinite;
+  }
+
+  .ask {
+    animation: ask 3s var(--ease) infinite;
+  }
+
+  .answer,
+  .answer-text {
+    animation: answer 3s var(--ease) infinite;
+  }
+
+  .http .payload,
+  .https .payload {
+    animation: carry 3s var(--ease) infinite;
+  }
+
+  .pupil {
+    animation: watch 3s var(--ease) infinite;
+  }
+
+  .s1 {
+    animation: scramble-1 0.9s steps(1) infinite;
+  }
+
+  .s2 {
+    animation: scramble-2 0.9s steps(1) infinite;
+  }
+
+  .s3 {
+    animation: scramble-3 0.9s steps(1) infinite;
+  }
+
+  .huh {
+    animation: glow 1.5s ease-in-out infinite;
+  }
+
+  .orbit {
+    animation: orbit 2.6s linear infinite;
+  }
+
+  .route {
+    stroke-dasharray: 142;
+    animation: draw-route 2.6s var(--ease) infinite;
+  }
+
+  .route-head,
+  .port-8080 {
+    animation: arrive 2.6s var(--ease) infinite;
+  }
+
+  .port-80 {
+    animation: busy 2.6s ease-in-out infinite;
+  }
+
+  .r1,
+  .r2,
+  .r3 {
+    animation: fill-row 3s var(--ease) infinite;
+  }
+
+  .r2 {
+    animation-delay: 0.35s;
+  }
+
+  .r3 {
+    animation-delay: 0.7s;
+  }
+
+  .rank {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  .bolt {
+    animation: flash 1.2s steps(1) infinite;
+  }
+
+  .zip {
+    animation: zip 1.2s var(--ease) infinite;
+  }
+
+  .json {
+    animation: file-doc 3s var(--ease) infinite;
+  }
+
+  .doc-front {
+    animation: settle 3s var(--ease) infinite;
+  }
+}
+
+@keyframes travel-tunnel {
+  from {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  10%,
+  90% {
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(180px);
+    opacity: 0;
+  }
+}
+
+@keyframes glow {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes ask {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  45%,
+  80% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes answer {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+
+  45%,
+  85% {
+    opacity: 1;
+    transform: none;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes carry {
+  from {
+    transform: translateX(-56px);
+    opacity: 0;
+  }
+
+  15%,
+  80% {
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(56px);
+    opacity: 0;
+  }
+}
+
+@keyframes watch {
+  from {
+    transform: translateX(-4px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes scramble-1 {
+  0% {
+    opacity: 1;
+  }
+
+  33% {
+    opacity: 0;
+  }
+}
+
+@keyframes scramble-2 {
+  0% {
+    opacity: 0;
+  }
+
+  33% {
+    opacity: 1;
+  }
+
+  66% {
+    opacity: 0;
+  }
+}
+
+@keyframes scramble-3 {
+  0% {
+    opacity: 0;
+  }
+
+  66% {
+    opacity: 1;
+  }
+}
+
+@keyframes orbit {
+  from {
+    offset-distance: 0%;
+  }
+
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes draw-route {
+  from {
+    stroke-dashoffset: 142;
+  }
+
+  45%,
+  85% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes arrive {
+  0%,
+  40% {
+    opacity: 0.25;
+  }
+
+  50%,
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.25;
+  }
+}
+
+@keyframes busy {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes fill-row {
+  0%,
+  10% {
+    opacity: 0;
+  }
+
+  30%,
+  85% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes flash {
+  0%,
+  60% {
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 0.2;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes zip {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  35% {
+    transform: translateX(184px);
+    opacity: 1;
+  }
+
+  45%,
+  to {
+    transform: translateX(184px);
+    opacity: 0;
+  }
+}
+
+@keyframes file-doc {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+
+  20%,
+  60% {
+    opacity: 1;
+  }
+
+  80%,
+  to {
+    transform: translateX(80px);
+    opacity: 0;
+  }
+}
+
+@keyframes settle {
+  0%,
+  70% {
+    transform: none;
+  }
+
+  78% {
+    transform: translateY(3px);
+  }
+
+  86%,
+  100% {
+    transform: none;
+  }
+}
