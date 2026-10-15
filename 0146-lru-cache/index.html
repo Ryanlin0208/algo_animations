@@ -10,8 +10,8 @@
 </head>
 <body>
 <main>
-  <header><a class="brand" href="../"><span class="mark">[k]</span> ALGORITHM LAB</a><span class="edition">HASH MAP + DOUBLY LINKED LIST / 146</span></header>
-  <section class="heading"><div><p class="eyebrow">LEETCODE 146 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>LRU Cache</h1><p>用雜湊表快速查找，用雙向串列維護<span class="accent">最近使用順序</span>。</p></div><div class="complexity">GET / PUT <b>平均 O(1)</b><small>空間 O(capacity)</small></div></section>
+  <header><a class="brand" href="../"><span class="mark">A</span> ALGO ANIMATION</a><span class="edition">HASH MAP + DOUBLY LINKED LIST / 146</span></header>
+  <section class="heading"><div><p class="eyebrow">ALGO 146 <span>MEDIUM</span></p><h1><a class="back-home" href="../">題目目錄</a>LRU Cache</h1><p>用雜湊表快速查找，用雙向串列維護<span class="accent">最近使用順序</span>。</p></div><div class="complexity">GET / PUT <b>平均 O(1)</b><small>空間 O(capacity)</small></div></section>
   <form id="inputs" class="inputs"><label>capacity<input id="capacity" type="number" min="1" max="6" value="2" required></label><label class="array-input">操作（JSON 陣列）<textarea id="operations" rows="2" spellcheck="false">[["put",1,1],["put",2,2],["get",1],["put",3,3],["get",2],["put",4,4],["get",1],["get",3],["get",4]]</textarea></label><button type="submit" class="apply">套用輸入</button><div class="examples"><span>試試看</span><button type="button" data-example="classic">經典淘汰</button><button type="button" data-example="update">更新同 key</button><button type="button" data-example="one">容量為 1</button><button type="button" data-example="miss">連續未命中</button></div><p id="error" role="alert"></p></form>
   <div class="workspace">
     <section class="panel visualization" aria-label="LRU 快取動畫">

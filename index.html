@@ -208,6 +208,8 @@
         }
     
 main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.section-head{grid-column:1/-1;margin:0 0 2px}.lesson{margin:0!important;grid-template-columns:55px minmax(0,1fr);gap:16px;padding:23px;align-items:start;height:100%}.lesson .open{grid-column:2}.lesson h3{font-size:19px}.tags{flex-wrap:wrap}.number{font-size:23px}.brand{letter-spacing:1.5px}@media(max-width:700px){#lessons{grid-template-columns:1fr}main{padding:22px 16px}.lesson{padding:19px;gap:12px}.intro{padding:28px 0}.lesson .open{grid-column:2}.brand{font-size:11px}}
+
+.lesson[hidden]{display:none}.pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:28px 0}.pagination button{background:#111c29;color:#e7edf5;border:1px solid #2b4053;border-radius:6px;padding:8px 13px;font:14px system-ui;cursor:pointer}.pagination button[aria-current="page"]{background:#59e0bd;color:#0b111b;border-color:#59e0bd}.pagination button:disabled{opacity:.4;cursor:default}.pagination button:focus-visible{outline:2px solid #59e0bd;outline-offset:3px}
 </style>
 </head>
 
@@ -223,7 +225,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
         </section>
         <section id="lessons" aria-label="題目列表">
             <div class="section-head">
-                <h2>所有動畫</h2><span class="count" id="lesson-count">11 個動畫</span>
+                <h2>所有動畫</h2><span class="count" id="lesson-count">13 個動畫</span>
             </div>
             <a class="lesson" href="./0092-reverse-linked-list-ii/">
                 <div class="number">0092</div>
@@ -278,6 +280,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
+            <a class="lesson" href="./0621-task-scheduler/"><div class="number">0621</div><div><h3>Task Scheduler</h3><p>以堆積分輪執行任務，觀察冷卻與 idle 時槽。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Cooldown</span></div></div><span class="open">開啟互動動畫</span></a>
             <a class="lesson" href="./0658-find-k-closest/">
                 <div class="number">0658</div>
                 <div>
@@ -296,6 +299,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             Stack</span><span>等待天數</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
+            <a class="lesson" href="./0767-reorganize-string/"><div class="number">0767</div><div><h3>Reorganize String</h3><p>用負頻率堆積與暫存字元，避免相鄰字元重複。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Greedy</span></div></div><span class="open">開啟互動動畫</span></a>
             <a class="lesson" href="./0853-car-fleet/">
                 <div class="number">0853</div>
                 <div>
@@ -328,10 +332,44 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                 <span class="open">開啟互動動畫</span>
             </a>
         </section>
+        <nav id="pagination" class="pagination" aria-label="題目分頁"></nav>
     </main>
     <script>
-        const lessonCount = document.querySelectorAll('#lessons > a.lesson').length;
-        document.getElementById('lesson-count').textContent = `${lessonCount} 個動畫`;
+        const lessons = [...document.querySelectorAll('#lessons > a.lesson')];
+        const pageSize = 10;
+        const pageCount = Math.max(1, Math.ceil(lessons.length / pageSize));
+        const navigation = document.getElementById('pagination');
+        const counter = document.getElementById('lesson-count');
+        counter.setAttribute('aria-live', 'polite');
+        let page = 1;
+        function showPage(requested, updateUrl = false) {
+            page = Math.max(1, Math.min(pageCount, Number.isInteger(requested) ? requested : 1));
+            lessons.forEach((lesson, i) => { lesson.hidden = i < (page - 1) * pageSize || i >= page * pageSize; });
+            counter.textContent = `${lessons.length} 個動畫 · 第 ${page} / ${pageCount} 頁`;
+            navigation.querySelectorAll('button').forEach(button => {
+                const target = button.dataset.page;
+                button.disabled = target === 'prev' ? page === 1 : target === 'next' ? page === pageCount : false;
+                if (Number(target) === page) button.setAttribute('aria-current', 'page');
+                else button.removeAttribute('aria-current');
+            });
+            if (updateUrl) {
+                const url = new URL(location.href);
+                url.searchParams.set('page', page);
+                history.pushState(null, '', url);
+            }
+        }
+        for (const target of ['prev', ...Array.from({length: pageCount}, (_, i) => i + 1), 'next']) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.dataset.page = target;
+            button.textContent = target === 'prev' ? '上一頁' : target === 'next' ? '下一頁' : target;
+            button.addEventListener('click', () => showPage(target === 'prev' ? page - 1 : target === 'next' ? page + 1 : target, true));
+            navigation.append(button);
+        }
+        navigation.hidden = pageCount <= 1;
+        function readPage() { showPage(Number(new URL(location.href).searchParams.get('page') || 1)); }
+        window.addEventListener('popstate', readPage);
+        readPage();
     </script>
 </body>
 
