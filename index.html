@@ -8,209 +8,74 @@
     <meta name="description" content="用互動動畫理解 Algo 演算法，逐步觀察程式碼、搜尋範圍與結果。">
     <link rel="icon"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Ctext x='5' y='23' fill='%2359e0bd' font-size='21'%3E%5B%5D%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="./assets/theme.css">
     <style>
-        :root {
-            color-scheme: dark
+        /* Home: the notebook cover. Tokens come from assets/theme.css. */
+        main{max-width:1180px;margin:auto;padding:28px 28px 40px}
+        header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:18px}
+        .brand{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text)}
+        .brand span{display:grid;place-items:center;width:30px;height:30px;border-radius:7px;background:var(--text);color:var(--bg);font:600 16px var(--mono);box-shadow:3px 3px 0 var(--active)}
+        header a{font-size:14px;color:var(--active);text-decoration:none;font-weight:500}
+        .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,440px);gap:48px;align-items:center;padding:56px 0 48px}
+        .eyebrow{font:13px var(--mono);color:var(--faint);letter-spacing:.04em}
+        h1{font-size:clamp(30px,4.4vw,50px);line-height:1.18;letter-spacing:-.025em;margin:14px 0 16px;font-weight:700;text-wrap:balance}
+        .intro p{color:var(--muted);font-size:17px;max-width:34em;margin:0}
+
+        /* Hero trace: a pointer walks an array while the matching code line is highlighted. Decorative. */
+        .trace{background:var(--panel);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px 20px 20px;font-family:var(--mono);overflow:hidden}
+        .trace-head{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-bottom:14px}
+        .trace-head b{display:inline-flex;align-items:center;gap:7px;font-weight:500;color:var(--active-ink);background:var(--active-bg);padding:1px 9px;border-radius:999px}
+        .trace-head b::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;animation:pulse 1.6s ease-in-out infinite}
+        .cells{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding-top:26px}
+        .cells span{height:44px;display:grid;place-items:center;border-radius:8px;background:var(--cell);border:1px solid var(--line-2);font-size:17px;color:var(--text);animation:visit 8s var(--ease) infinite;animation-delay:calc(var(--n) * 1s)}
+        .ptr{position:absolute;top:0;left:0;width:calc((100% - 36px) / 7);text-align:center;font-size:12px;color:var(--focus);animation:walk 8s var(--ease-in-out) infinite}
+        .ptr::after{content:"";display:block;width:0;height:0;margin:2px auto 0;border:5px solid transparent;border-top-color:var(--focus)}
+        .code{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-size:12.5px;line-height:1.95;color:var(--muted);position:relative}
+        .code div{position:relative;z-index:1;white-space:pre}
+        .code::before{content:"";position:absolute;left:-20px;right:-20px;top:12px;height:calc(1.95em);background:var(--focus-bg);border-left:3px solid var(--focus);animation:line 8s steps(1) infinite}
+        @keyframes walk{0%,8%{transform:translateX(calc(0% + 0px))}12.5%,20.5%{transform:translateX(calc(100% + 6px))}25%,33%{transform:translateX(calc(200% + 12px))}37.5%,45.5%{transform:translateX(calc(300% + 18px))}50%,58%{transform:translateX(calc(400% + 24px))}62.5%,70.5%{transform:translateX(calc(500% + 30px))}75%,96%{transform:translateX(calc(600% + 36px))}100%{transform:translateX(0)}}
+        @keyframes visit{0%{background:var(--focus-bg);border-color:var(--focus);color:var(--focus)}10%,88%{background:var(--active-bg);border-color:var(--active-line);color:var(--active-ink)}96%,100%{background:var(--cell);border-color:var(--line-2);color:var(--text)}}
+        @keyframes line{0%{transform:translateY(0em)}3.5%{transform:translateY(1.95em)}7%{transform:translateY(3.9em)}12.5%{transform:translateY(0em)}16%{transform:translateY(1.95em)}19.5%{transform:translateY(3.9em)}25%{transform:translateY(0em)}28.5%{transform:translateY(1.95em)}37.5%{transform:translateY(0em)}41%{transform:translateY(1.95em)}50%{transform:translateY(0em)}53.5%{transform:translateY(1.95em)}62.5%{transform:translateY(0em)}66%{transform:translateY(1.95em)}69.5%{transform:translateY(3.9em)}75%{transform:translateY(0em)}78.5%{transform:translateY(1.95em)}87.5%{transform:translateY(5.85em)}}
+        @keyframes pulse{50%{opacity:.25}}
+
+        .section-head{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;margin:0 0 4px}
+        h2{font-size:18px;margin:0;font-weight:600}
+        .count{font:13px var(--mono);color:var(--faint)}
+        #lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+        .lesson{position:relative;display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 16px;align-items:start;padding:22px 22px 18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:var(--shadow);color:inherit;text-decoration:none;
+            transition:border-color .2s ease,transform .25s var(--ease),box-shadow .25s var(--ease);animation:rise .45s var(--ease) both;animation-delay:calc(var(--i,0) * 40ms)}
+        .lesson[hidden]{display:none}
+        .number{font:500 22px/1.3 var(--mono);color:var(--active);letter-spacing:-.02em;padding-top:2px}
+        .lesson h3{font-size:19px;line-height:1.35;margin:0 0 6px;font-weight:600;letter-spacing:-.01em}
+        .lesson p{font-size:14px;color:var(--muted);margin:0}
+        .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;font-size:12px}
+        .tags span{padding:1px 9px;border-radius:999px;background:var(--well);border:1px solid var(--line);color:var(--muted)}
+        .tags .difficulty{color:var(--focus);background:var(--focus-bg);border-color:transparent}
+        .open{grid-column:2;margin-top:14px;font-size:14px;font-weight:500;color:var(--active);display:inline-flex;align-items:center;gap:8px}
+        .open::after{content:"";width:16px;height:1.5px;background:currentColor;transition:width .25s var(--ease)}
+        .lesson:focus-visible{outline:2px solid var(--active);outline-offset:4px}
+        @media (hover:hover) and (pointer:fine){
+            .lesson:hover{border-color:var(--active-line);transform:translateY(-2px);box-shadow:0 1px 2px #18202b0d,0 16px 32px -18px color-mix(in srgb,var(--active) 45%,transparent)}
+            .lesson:hover .open::after{width:28px}
         }
-
-        * {
-            box-sizing: border-box
+        .lesson:active{transform:scale(.99)}
+        .pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:28px 0 0}
+        .pagination button{border:1px solid var(--line-2);min-width:40px;padding:8px 13px;font:500 14px var(--sans)}
+        .pagination button[aria-current="page"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+        .pagination button:disabled{opacity:.4;cursor:default}
+        footer{margin-top:28px;font-size:13px;color:var(--faint)}
+        @media(max-width:860px){.intro{grid-template-columns:1fr;gap:28px;padding:36px 0 32px}}
+        @media(max-width:700px){main{padding:18px 16px 32px}#lessons{grid-template-columns:1fr}.lesson{grid-template-columns:52px minmax(0,1fr);padding:18px}.number{font-size:18px}.brand{font-size:11px}.trace{padding:14px}.cells span{height:38px;font-size:15px}.code{font-size:11.5px}}
+        @media(prefers-reduced-motion:reduce){
+            .lesson{animation:fade .2s ease both;transition:border-color .2s ease}
+            .lesson:hover,.lesson:active{transform:none}
+            .ptr,.cells span,.code::before,.trace-head b::before{animation:none}
+            .ptr{transform:translateX(calc(300% + 18px))}
         }
-
-        body {
-            margin: 0;
-            background: #0b111b;
-            color: #e7edf5;
-            font: 16px/1.65 system-ui, -apple-system, "PingFang TC", sans-serif
-        }
-
-        main {
-            max-width: 1060px;
-            margin: auto;
-            padding: 30px 28px
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #263446;
-            padding-bottom: 20px
-        }
-
-        .brand {
-            font: 700 13px monospace;
-            letter-spacing: 2px
-        }
-
-        .brand span {
-            color: #59e0bd;
-            margin-right: 12px
-        }
-
-        a {
-            color: #59e0bd
-        }
-
-        header a {
-            font-size: 14px;
-            text-decoration: none
-        }
-
-        .intro {
-            padding: 42px 0 30px
-        }
-
-        .eyebrow {
-            font: 12px monospace;
-            letter-spacing: 2px;
-            color: #9aacc1
-        }
-
-        h1 {
-            font-size: clamp(26px, 4vw, 40px);
-            letter-spacing: -1px;
-            margin: 12px 0
-        }
-
-        p {
-            color: #a7b6c9;
-            margin: 0
-        }
-
-        .section-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px
-        }
-
-        h2 {
-            font-size: 16px;
-            margin: 0
-        }
-
-        .count {
-            font: 13px monospace;
-            color: #9aacc1
-        }
-
-        .lesson {
-            display: grid;
-            grid-template-columns: 68px 1fr auto;
-            align-items: center;
-            gap: 22px;
-            padding: 26px;
-            border: 1px solid #2b4053;
-            border-radius: 12px;
-            background: #111c29;
-            color: inherit;
-            text-decoration: none;
-            transition: background .2s, border-color .2s
-        }
-
-        .lesson:hover {
-            background: #172737;
-            border-color: #59e0bd
-        }
-
-        .lesson:focus-visible {
-            outline: 3px solid #59e0bd;
-            outline-offset: 5px
-        }
-
-        .number {
-            font: 28px monospace;
-            color: #59e0bd
-        }
-
-        .lesson h3 {
-            font-size: 20px;
-            margin: 0 0 6px;
-            line-height: 1.4
-        }
-
-        .lesson p {
-            font-size: 14px
-        }
-
-        .tags {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            font-size: 12px
-        }
-
-        .tags span {
-            padding: 2px 8px;
-            background: #203043;
-            border-radius: 4px;
-            color: #b8c9dd
-        }
-
-        .tags .difficulty {
-            color: #ffb16b;
-            background: #352d28
-        }
-
-        .open {
-            font-size: 14px;
-            color: #59e0bd;
-            white-space: nowrap
-        }
-
-        footer {
-            margin-top: 28px;
-            font-size: 13px;
-            color: #8295ad
-        }
-
-        @media(max-width:600px) {
-            main {
-                padding: 22px 18px
-            }
-
-            .intro {
-                padding: 28px 0
-            }
-
-            .lesson {
-                grid-template-columns: 1fr;
-                gap: 10px;
-                padding: 20px
-            }
-
-            .number {
-                font-size: 20px
-            }
-
-            .lesson h3 {
-                font-size: 19px
-            }
-
-            .open {
-                margin-top: 8px
-            }
-
-            header {
-                gap: 12px
-            }
-
-            .brand {
-                font-size: 11px
-            }
-        }
-
-        @media(prefers-reduced-motion:reduce) {
-            .lesson {
-                transition: none
-            }
-        }
-    
-main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.section-head{grid-column:1/-1;margin:0 0 2px}.lesson{margin:0!important;grid-template-columns:55px minmax(0,1fr);gap:16px;padding:23px;align-items:start;height:100%}.lesson .open{grid-column:2}.lesson h3{font-size:19px}.tags{flex-wrap:wrap}.number{font-size:23px}.brand{letter-spacing:1.5px}@media(max-width:700px){#lessons{grid-template-columns:1fr}main{padding:22px 16px}.lesson{padding:19px;gap:12px}.intro{padding:28px 0}.lesson .open{grid-column:2}.brand{font-size:11px}}
-
-.lesson[hidden]{display:none}.pagination{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:28px 0}.pagination button{background:#111c29;color:#e7edf5;border:1px solid #2b4053;border-radius:6px;padding:8px 13px;font:14px system-ui;cursor:pointer}.pagination button[aria-current="page"]{background:#59e0bd;color:#0b111b;border-color:#59e0bd}.pagination button:disabled{opacity:.4;cursor:default}.pagination button:focus-visible{outline:2px solid #59e0bd;outline-offset:3px}
-</style>
+        @keyframes fade{from{opacity:0}}
+    </style>
 </head>
 
 <body>
@@ -219,15 +84,22 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
             <div class="brand"><span>A</span> ALGO / ANIMATION LAB</div><a href="#lessons">瀏覽所有動畫</a>
         </header>
         <section class="intro">
-            <div class="eyebrow">INTERACTIVE ALGORITHM ANIMATIONS</div>
-            <h1>讓演算法，一步一步動起來。</h1>
-            <p>選一道題目，搭配程式碼觀察每一步的變化。</p>
+            <div>
+                <div class="eyebrow">Interactive algorithm animations</div>
+                <h1>讓演算法，一步一步動起來。</h1>
+                <p>選一道題目，搭配程式碼觀察每一步的變化。</p>
+            </div>
+            <div class="trace" aria-hidden="true">
+                <div class="trace-head"><span>for i in range(n)</span><b>tracing</b></div>
+                <div class="cells"><i class="ptr">i</i><span style="--n:0">3</span><span style="--n:1">8</span><span style="--n:2">1</span><span style="--n:3">6</span><span style="--n:4">4</span><span style="--n:5">9</span><span style="--n:6">2</span></div>
+                <div class="code"><div>for i in range(n):</div><div>    if nums[i] &gt; best:</div><div>        best = nums[i]</div><div>return best</div></div>
+            </div>
         </section>
         <section id="lessons" aria-label="題目列表">
             <div class="section-head">
                 <h2>所有動畫</h2><span class="count" id="lesson-count">13 個動畫</span>
             </div>
-            <a class="lesson" href="./0092-reverse-linked-list-ii/">
+            <a class="lesson" style="--i:0" href="./0092-reverse-linked-list-ii/">
                 <div class="number">0092</div>
                 <div>
                     <h3>Reverse Linked List II</h3>
@@ -236,7 +108,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0146-lru-cache/">
+            <a class="lesson" style="--i:1" href="./0146-lru-cache/">
                 <div class="number">0146</div>
                 <div>
                     <h3>LRU Cache</h3>
@@ -245,7 +117,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             List</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0208-implement-trie/">
+            <a class="lesson" style="--i:2" href="./0208-implement-trie/">
                 <div class="number">0208</div>
                 <div>
                     <h3>Implement Trie · Prefix Tree</h3>
@@ -254,7 +126,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                 </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0238-product-of-array-except-self/">
+            <a class="lesson" style="--i:3" href="./0238-product-of-array-except-self/">
                 <div class="number">0238</div>
                 <div>
                     <h3>Product of Array Except Self</h3>
@@ -263,7 +135,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0394-decode-string/">
+            <a class="lesson" style="--i:4" href="./0394-decode-string/">
                 <div class="number">0394</div>
                 <div>
                     <h3>Decode String</h3>
@@ -271,7 +143,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     <div class="tags"><span class="difficulty">Medium</span><span>Stack</span><span>巢狀字串</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0560-subarray-sum-equals-k/">
+            <a class="lesson" style="--i:5" href="./0560-subarray-sum-equals-k/">
                 <div class="number">0560</div>
                 <div>
                     <h3>Subarray Sum Equals K</h3>
@@ -280,8 +152,8 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0621-task-scheduler/"><div class="number">0621</div><div><h3>Task Scheduler</h3><p>以堆積分輪執行任務，觀察冷卻與 idle 時槽。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Cooldown</span></div></div><span class="open">開啟互動動畫</span></a>
-            <a class="lesson" href="./0658-find-k-closest/">
+            <a class="lesson" style="--i:6" href="./0621-task-scheduler/"><div class="number">0621</div><div><h3>Task Scheduler</h3><p>以堆積分輪執行任務，觀察冷卻與 idle 時槽。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Cooldown</span></div></div><span class="open">開啟互動動畫</span></a>
+            <a class="lesson" style="--i:7" href="./0658-find-k-closest/">
                 <div class="number">0658</div>
                 <div>
                     <h3>Find K Closest Elements</h3>
@@ -290,7 +162,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             Search</span><span>固定長度視窗</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0739-daily-temperatures/">
+            <a class="lesson" style="--i:8" href="./0739-daily-temperatures/">
                 <div class="number">0739</div>
                 <div>
                     <h3>Daily Temperatures</h3>
@@ -299,8 +171,8 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             Stack</span><span>等待天數</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0767-reorganize-string/"><div class="number">0767</div><div><h3>Reorganize String</h3><p>用負頻率堆積與暫存字元，避免相鄰字元重複。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Greedy</span></div></div><span class="open">開啟互動動畫</span></a>
-            <a class="lesson" href="./0853-car-fleet/">
+            <a class="lesson" style="--i:9" href="./0767-reorganize-string/"><div class="number">0767</div><div><h3>Reorganize String</h3><p>用負頻率堆積與暫存字元，避免相鄰字元重複。</p><div class="tags"><span class="difficulty">Medium</span><span>Heap</span><span>Greedy</span></div></div><span class="open">開啟互動動畫</span></a>
+            <a class="lesson" style="--i:0" href="./0853-car-fleet/">
                 <div class="number">0853</div>
                 <div>
                     <h3>Car Fleet</h3>
@@ -309,7 +181,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                             車隊合併</span></div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./0875-koko-eating-bananas/">
+            <a class="lesson" style="--i:1" href="./0875-koko-eating-bananas/">
                 <div class="number">0875</div>
                 <div>
                     <h3>Koko Eating Bananas</h3>
@@ -318,7 +190,7 @@ main{max-width:1180px;padding:32px 28px}.intro{padding:42px 0 34px}#lessons{disp
                     </div>
                 </div><span class="open">開啟互動動畫</span>
             </a>
-            <a class="lesson" href="./1011-capacity-to-ship-packages/">
+            <a class="lesson" style="--i:2" href="./1011-capacity-to-ship-packages/">
                 <div class="number">1011</div>
                 <div>
                     <h3>Capacity to Ship Packages</h3>
