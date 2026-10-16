@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>
+      309 · Best Time to Buy and Sell Stock with Cooldown｜演算法動畫
+    </title>
+    <meta
+      name="description"
+      content="逐日推進 buy、sell、rest 三種狀態，觀察賣出後冷卻一天的狀態轉移。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M6 22l6-7 5 4 9-10' stroke='%2359e0bd' fill='none' stroke-width='2.4'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">STATE MACHINE DP / 309</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 309 <span>MEDIUM</span></p>
+          <h1>
+            <a class="back-home" href="../">題目目錄</a>Best Time to Buy and
+            Sell Stock with Cooldown
+          </h1>
+          <p>
+            每天只看昨天的三種狀態，<span class="accent"
+              >賣出後必須冷卻一天</span
+            >。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n)</b><small>空間 O(n)：三個 DP 陣列</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >股價 prices<input
+            id="prices"
+            value="1, 2, 3, 0, 2"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="cooldown">冷卻取捨</button
+          ><button type="button" data-example="rising">一路上漲</button
+          ><button type="button" data-example="falling">一路下跌</button
+          ><button type="button" data-example="single">只有一天</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="狀態機 DP 動畫">
+          <div class="panel-head">
+            <span>01 / 逐日狀態轉移</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>i</small><b id="i">—</b></div>
+            <div><small>prices[i]</small><b id="price">—</b></div>
+            <div><small>更新中</small><b id="target">—</b></div>
+          </div>
+          <div class="row-heading">
+            價格與 DP 表 <span>每一欄是一天；橘色是正在計算的格子</span>
+          </div>
+          <div class="array-scroll">
+            <div id="grid" class="dp-grid"></div>
+          </div>
+          <div class="row-heading">
+            狀態機 <span>粗橘線是 max() 選中的轉移</span>
+          </div>
+          <svg
+            id="machine"
+            class="machine"
+            viewBox="0 0 420 205"
+            role="img"
+            aria-label="buy、sell、rest 三種狀態的轉移圖"
+          >
+            <defs>
+              <marker
+                id="arrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerUnits="userSpaceOnUse"
+                markerWidth="9"
+                markerHeight="9"
+                orient="auto-start-reverse"
+              >
+                <path class="arrow-base" d="M0 0L10 5L0 10z" />
+              </marker>
+              <marker
+                id="arrow-cand"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerUnits="userSpaceOnUse"
+                markerWidth="9"
+                markerHeight="9"
+                orient="auto-start-reverse"
+              >
+                <path class="arrow-cand" d="M0 0L10 5L0 10z" />
+              </marker>
+              <marker
+                id="arrow-win"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerUnits="userSpaceOnUse"
+                markerWidth="11"
+                markerHeight="11"
+                orient="auto-start-reverse"
+              >
+                <path class="arrow-win" d="M0 0L10 5L0 10z" />
+              </marker>
+            </defs>
+            <path
+              class="edge"
+              data-edge="rest-rest"
+              d="M196 36C178 2 242 2 224 36"
+            />
+            <path
+              class="edge"
+              data-edge="buy-buy"
+              d="M54 148C14 126 14 188 54 168"
+            />
+            <path
+              class="edge"
+              data-edge="sell-sell"
+              d="M366 148C406 126 406 188 366 168"
+            />
+            <path class="edge" data-edge="rest-buy" d="M183 70Q112 70 94 130" />
+            <path
+              class="edge dashed"
+              data-edge="buy-rest"
+              d="M106 144Q182 136 200 89"
+            />
+            <path
+              class="edge"
+              data-edge="sell-rest"
+              d="M326 130Q308 72 238 72"
+            />
+            <path class="edge" data-edge="buy-sell" d="M110 158L310 158" />
+            <text class="edge-label" data-edge="rest-buy" x="92" y="82">
+              −price
+            </text>
+            <text class="edge-label" data-edge="buy-sell" x="210" y="180">
+              +price 賣出
+            </text>
+            <text class="edge-label" data-edge="sell-rest" x="330" y="86">
+              冷卻
+            </text>
+            <text class="edge-label" data-edge="buy-rest" x="212" y="134">
+              ≤ rest
+            </text>
+            <g class="node" data-node="rest">
+              <circle cx="210" cy="62" r="27" />
+              <text x="210" y="60">rest</text>
+              <text class="node-value" x="210" y="76">—</text>
+            </g>
+            <g class="node" data-node="buy">
+              <circle cx="80" cy="158" r="27" />
+              <text x="80" y="156">buy</text>
+              <text class="node-value" x="80" y="172">—</text>
+            </g>
+            <g class="node" data-node="sell">
+              <circle cx="340" cy="158" r="27" />
+              <text x="340" y="156">sell</text>
+              <text class="node-value" x="340" y="172">—</text>
+            </g>
+          </svg>
+          <div id="candidates" class="candidates" aria-live="polite"></div>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：三種狀態代表什麼？</summary>
+            <h2>每一天結束時，你只會處在三種狀態之一。</h2>
+            <p>
+              <b>buy[i]</b>：第 i
+              天結束時手上持有股票的最大利潤（今天買入，或之前買了繼續持有）。
+            </p>
+            <p>
+              <b>sell[i]</b>：第 i
+              天結束時手上沒有股票、且到目前為止最好的賣出收益。今天賣出要從
+              buy[i − 1] 加上今天的價格。
+            </p>
+            <p>
+              <b>rest[i]</b>：第 i
+              天結束時沒有股票、可以在明天買入。昨天剛賣（sell[i −
+              1]）的人今天只能休息，所以 buy 只能從 rest
+              轉移過來，這就是冷卻期。
+            </p>
+            <p>
+              rest 的 max 裡多放了 buy[i − 1]：因為 buy[i] ≤ rest[i]
+              恆成立，它從不會勝出，答案仍然正確，只是一個多餘的候選。
+            </p>
+            <p>
+              時間 O(n)，空間 O(n)；每天只用到前一天，可以再壓縮成三個變數達到
+              O(1)。
+            </p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>309 / buy ← rest，sell ← buy，rest ← sell：冷卻藏在轉移裡。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>

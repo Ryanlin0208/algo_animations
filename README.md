@@ -2,7 +2,7 @@
 
 **網站：<https://ryanlin0208.github.io/algo_animations/>**
 
-十三道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
+十四道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
 
 網站部署後，從根目錄的 `index.html` 開始。所有題目與資源使用相對路徑，可放在任意 GitHub 帳號與儲存庫名稱下。
 
@@ -12,6 +12,7 @@
 | 146 | LRU Cache | [開啟](./0146-lru-cache/) |
 | 208 | Implement Trie · Prefix Tree | [開啟](./0208-implement-trie/) |
 | 238 | Product of Array Except Self | [開啟](./0238-product-of-array-except-self/) |
+| 309 | Best Time to Buy and Sell Stock with Cooldown | [開啟](./0309-best-time-to-buy-and-sell-stock-with-cooldown/) |
 | 394 | Decode String | [開啟](./0394-decode-string/) |
 | 560 | Subarray Sum Equals K | [開啟](./0560-subarray-sum-equals-k/) |
 | 621 | Task Scheduler | [開啟](./0621-task-scheduler/) |
@@ -46,6 +47,7 @@ README.md                   專案說明
 0146-lru-cache/
 0208-implement-trie/
 0238-product-of-array-except-self/
+0309-best-time-to-buy-and-sell-stock-with-cooldown/
 0394-decode-string/
 0560-subarray-sum-equals-k/
 0621-task-scheduler/
@@ -70,6 +72,7 @@ node 0092-reverse-linked-list-ii/check.cjs
 node 0146-lru-cache/check.cjs
 node 0208-implement-trie/check.cjs
 node 0238-product-of-array-except-self/check.cjs
+node 0309-best-time-to-buy-and-sell-stock-with-cooldown/check.cjs
 node 0394-decode-string/check.cjs
 node 0560-subarray-sum-equals-k/check.cjs
 node 0621-task-scheduler/check.cjs
