@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>494 · Target Sum｜演算法動畫</title>
+    <meta
+      name="description"
+      content="把正負號問題轉成子集合計數，逐步觀察 0/1 背包 dp 由右往左更新。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M8 12h6m-3-3v6M18 20h6' stroke='%2359e0bd' fill='none' stroke-width='2.4'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">0/1 KNAPSACK COUNT / 494</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 494 <span>MEDIUM</span></p>
+          <h1><a class="back-home" href="../">題目目錄</a>Target Sum</h1>
+          <p>
+            正負號問題轉成<span class="accent">湊出 P 的子集合有幾種</span>。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n · P)</b><small>空間 O(P)，P = (total + target) / 2</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >陣列 nums<input
+            id="nums"
+            value="1, 1, 1, 1, 1"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><label
+          >target<input
+            id="target"
+            value="3"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="mixed">不同大小</button
+          ><button type="button" data-example="zeros">含 0</button
+          ><button type="button" data-example="negative">負 target</button
+          ><button type="button" data-example="odd">奇偶不符</button
+          ><button type="button" data-example="far">超出範圍</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="子集合計數動畫">
+          <div class="panel-head">
+            <span>01 / 子集合計數 DP</span
+            ><span id="phase" class="tag">SUM</span>
+          </div>
+          <div class="stats">
+            <div><small>total</small><b id="total">—</b></div>
+            <div><small>target</small><b id="target-stat">—</b></div>
+            <div><small>P</small><b id="p">—</b></div>
+            <div><small>x</small><b id="x">—</b></div>
+            <div><small>s</small><b id="s">—</b></div>
+          </div>
+          <div class="row-heading">
+            nums <span>綠色：已放入考慮；橘色：目前的 x</span>
+          </div>
+          <div id="nums-row" class="chips"></div>
+          <div class="row-heading">
+            dp <span id="direction">dp[s] = 湊出總和 s 的方法數</span>
+          </div>
+          <div class="array-scroll">
+            <div id="dp-wrap" class="dp-wrap">
+              <div id="dp-row" class="dp-row"></div>
+              <svg id="arc" class="arc" aria-hidden="true">
+                <defs>
+                  <marker
+                    id="arc-head"
+                    viewBox="0 0 10 10"
+                    refX="8"
+                    refY="5"
+                    markerUnits="userSpaceOnUse"
+                    markerWidth="9"
+                    markerHeight="9"
+                    orient="auto-start-reverse"
+                  >
+                    <path d="M0 0L10 5L0 10z" />
+                  </marker>
+                </defs>
+                <path id="arc-path" d="" />
+                <text id="arc-label" text-anchor="middle"></text>
+              </svg>
+            </div>
+          </div>
+          <div class="legend">
+            <span><i class="orange"></i>正在更新的 dp[s]</span
+            ><span><i class="mint"></i>本輪已更新</span
+            ><span><i class="hollow"></i>來源 dp[s − x]（仍是舊值）</span>
+          </div>
+          <div class="comparison">
+            <div>
+              <small id="expression-label">目前操作</small
+              ><strong id="expression">—</strong
+              ><span id="operation-note">每次只執行高亮的程式碼</span>
+            </div>
+          </div>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：為什麼可以變成子集合問題？</summary>
+            <h2>把加號的數字放一組，減號的放另一組。</h2>
+            <p>
+              設正號組總和 P、負號組總和 N。P − N = target，P + N =
+              total，相加得 P = (total + target) / 2。只要數「總和恰好為 P
+              的子集合」有幾個，就是答案。
+            </p>
+            <p>
+              P 必須是非負整數：|target| > total 或 total + target
+              為奇數時，直接回傳 0。
+            </p>
+            <p>
+              每個數字只能用一次，所以 s 由右往左掃。更新 dp[s] 時，dp[s − x]
+              還沒被這一輪改過，代表「不含 x」的方法數；若由左往右，x
+              會被重複使用。
+            </p>
+            <p>
+              nums 裡的 0：x = 0 時 dp[s] += dp[s]，每個方法數翻倍，對應 +0 與
+              −0 兩種寫法。
+            </p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>494 / P − N = target，P + N = total → 數湊出 P 的子集合。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>
