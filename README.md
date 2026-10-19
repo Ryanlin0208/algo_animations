@@ -2,7 +2,7 @@
 
 **網站：<https://ryanlin0208.github.io/algo_animations/>**
 
-十五道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
+十六道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
 
 網站部署後，從根目錄的 `index.html` 開始。所有題目與資源使用相對路徑，可放在任意 GitHub 帳號與儲存庫名稱下。
 
@@ -22,6 +22,7 @@
 | 767 | Reorganize String | [開啟](./0767-reorganize-string/) |
 | 853 | Car Fleet | [開啟](./0853-car-fleet/) |
 | 875 | Koko Eating Bananas | [開啟](./0875-koko-eating-bananas/) |
+| 978 | Longest Turbulent Subarray | [開啟](./0978-longest-turbulent-subarray/) |
 | 1011 | Capacity to Ship Packages | [開啟](./1011-capacity-to-ship-packages/) |
 
 ## 部署
@@ -58,6 +59,7 @@ README.md                   專案說明
 0767-reorganize-string/
 0853-car-fleet/
 0875-koko-eating-bananas/
+0978-longest-turbulent-subarray/
 1011-capacity-to-ship-packages/
 ```
 
@@ -84,6 +86,7 @@ node 0739-daily-temperatures/check.cjs
 node 0767-reorganize-string/check.cjs
 node 0853-car-fleet/check.cjs
 node 0875-koko-eating-bananas/check.cjs
+node 0978-longest-turbulent-subarray/check.cjs
 node 1011-capacity-to-ship-packages/check.cjs
 ```
 

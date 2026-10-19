@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>978 · Longest Turbulent Subarray｜演算法動畫</title>
+    <meta
+      name="description"
+      content="把陣列畫成折線，觀察 up、down 兩條震盪鏈如何互相接力、在同方向或相等時斷開。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M5 20l5-9 5 10 5-11 6 9' stroke='%2359e0bd' fill='none' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">ROLLING DP / 978</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 978 <span>MEDIUM</span></p>
+          <h1>
+            <a class="back-home" href="../">題目目錄</a>Longest Turbulent
+            Subarray
+          </h1>
+          <p>
+            上升要接在下降後面，下降要接在上升後面，<span class="accent"
+              >up 與 down 兩條鏈互相接力</span
+            >。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n)</b><small>空間 O(1)：只留 up、down、ans</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >陣列 arr<input
+            id="arr"
+            value="9, 4, 2, 10, 7, 8, 8, 1, 9"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="zigzag">完美鋸齒</button
+          ><button type="button" data-example="rising">一路上漲</button
+          ><button type="button" data-example="equal">全部相等</button
+          ><button type="button" data-example="single">只有一個</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="震盪子陣列動畫">
+          <div class="panel-head">
+            <span>01 / 折線上的兩條鏈</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>i</small><b id="i">—</b></div>
+            <div><small>比較</small><b id="cmp">—</b></div>
+            <div class="rise"><small>up</small><b id="up">—</b></div>
+            <div class="fall"><small>down</small><b id="down">—</b></div>
+            <div class="target"><small>ans</small><b id="ans">—</b></div>
+          </div>
+          <div class="row-heading">
+            折線圖
+            <span
+              >每個點是 arr[i]；藍線上升、紅線下降，發光的是目前的震盪鏈</span
+            >
+          </div>
+          <div class="array-scroll" id="scroll">
+            <div id="stage" class="stage">
+              <div id="best-zone" class="best-zone" aria-hidden="true"></div>
+              <svg id="chart" class="chart" role="img" aria-label="陣列折線圖">
+                <g id="segments"></g>
+                <g id="points"></g>
+                <g id="cut" class="cut">
+                  <rect x="-15" y="-11" width="30" height="20" rx="10" />
+                  <text y="4">斷</text>
+                </g>
+                <g id="badge" class="badge">
+                  <circle r="14" />
+                  <text y="5"></text>
+                </g>
+              </svg>
+              <div id="index-row" class="index-row"></div>
+              <div class="chains">
+                <div class="chain-row rise" data-row="up">
+                  <span class="row-name">up</span>
+                  <div class="ghost"></div>
+                  <div class="band"></div>
+                  <span class="band-label"></span>
+                </div>
+                <div class="chain-row fall" data-row="down">
+                  <span class="row-name">down</span>
+                  <div class="ghost"></div>
+                  <div class="band"></div>
+                  <span class="band-label"></span>
+                </div>
+                <div class="chain-row best" data-row="ans">
+                  <span class="row-name">ans</span>
+                  <div class="ghost"></div>
+                  <div class="band"></div>
+                  <span class="band-label"></span>
+                </div>
+                <svg id="transfer" class="transfer" aria-hidden="true">
+                  <path />
+                  <text></text>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <div id="formula" class="formula" aria-live="polite"></div>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：up 和 down 代表什麼？</summary>
+            <h2>震盪就是折線一上一下、不能連續同方向。</h2>
+            <p>
+              <b>up</b>：以 arr[i] 結尾、而且<b>最後一步是上升</b>（arr[i] &gt;
+              arr[i − 1]）的最長震盪子陣列長度。
+            </p>
+            <p>
+              <b>down</b>：以 arr[i] 結尾、而且<b>最後一步是下降</b>的最長長度。
+            </p>
+            <p>
+              這一步上升時，前一步必須是下降，所以新的 up 是舊的 down 加
+              1；同時「以下降結尾」的鏈不可能結束在一個上升步，只剩 arr[i]
+              自己，down 歸 1。下降時左右對調；相等時兩條鏈都斷。
+            </p>
+            <p>
+              Python 的 <b>up, down = down + 1, 1</b>
+              是同時賦值：右邊先用舊值算完再一起寫入，所以不會用到剛更新的 up。
+            </p>
+            <p>時間 O(n)，空間 O(1)。</p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>978 / 上升接下降、下降接上升：兩條鏈輪流把對方接過來。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>
