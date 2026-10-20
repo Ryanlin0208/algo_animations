@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>678 · Valid Parenthesis String｜演算法動畫</title>
+    <meta
+      name="description"
+      content="把 lo、hi 畫成「未配對左括號數量」的可能範圍，觀察 * 如何撐開範圍、跌破地板的可能如何被剪掉。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M12 7c-4 5-4 13 0 18M20 7c4 5 4 13 0 18' stroke='%2359e0bd' fill='none' stroke-width='2.4' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='2.4' fill='%23f2b04a'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">GREEDY RANGE / 678</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 678 <span>MEDIUM</span></p>
+          <h1>
+            <a class="back-home" href="../">題目目錄</a>Valid Parenthesis String
+          </h1>
+          <p>
+            不用猜每個 * 是什麼，<span class="accent"
+              >只追蹤未配對 ( 的數量可能落在哪個範圍</span
+            >。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n)</b><small>空間 O(1)：只留 lo、hi</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >字串 s<input
+            id="s"
+            value="((*)*))(*)"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="rescue">* 救援</button
+          ><button type="button" data-example="close">右括號太多</button
+          ><button type="button" data-example="open">左括號沒關</button
+          ><button type="button" data-example="order">* 在前面沒用</button
+          ><button type="button" data-example="stars">全是 *</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="括號範圍動畫">
+          <div class="panel-head">
+            <span>01 / 未配對 ( 的可能範圍</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>i</small><b id="i">—</b></div>
+            <div><small>c</small><b id="c">—</b></div>
+            <div class="lo"><small>lo</small><b id="lo">—</b></div>
+            <div class="hi"><small>hi</small><b id="hi">—</b></div>
+            <div class="target"><small>可能的數量</small><b id="set">—</b></div>
+          </div>
+          <div class="row-heading">
+            範圍通道
+            <span
+              >格子＝讀完該字元後未配對 ( 的可能數量；紅色地板以下不合法</span
+            >
+          </div>
+          <div class="array-scroll" id="scroll">
+            <div id="stage" class="stage">
+              <svg
+                id="chart"
+                class="chart"
+                role="img"
+                aria-label="lo、hi 範圍圖"
+              >
+                <g id="axis" class="axis"></g>
+                <g id="ribbons"></g>
+                <g id="cells"></g>
+                <g id="edges"></g>
+                <g id="clamps"></g>
+                <g id="goal" class="goal">
+                  <rect rx="7" />
+                  <text></text>
+                </g>
+                <g id="hi-tag" class="tag-mark hi"><text></text></g>
+                <g id="lo-tag" class="tag-mark lo"><text></text></g>
+              </svg>
+              <div id="chars" class="chars"></div>
+            </div>
+          </div>
+          <div id="formula" class="formula" aria-live="polite"></div>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：lo 和 hi 代表什麼？</summary>
+            <h2>把所有 * 的選法一次考慮，只記住範圍的兩端。</h2>
+            <p>
+              掃描時記錄「目前還沒配對的 ( 有幾個」。因為 * 可以當 (、)
+              或空字串，這個數量不是一個值，而是一群可能的值。
+            </p>
+            <p>
+              <b>lo</b>：所有合法選法中，未配對 ( 的<b>最少</b>數量。
+              <b>hi</b>：<b>最多</b>數量。中間每個整數都做得到，所以只要記兩端。
+            </p>
+            <p>
+              <b>(</b> 讓整段 +1，<b>)</b> 讓整段 −1，<b>*</b> 讓下緣 −1、上緣
+              +1。
+            </p>
+            <p>
+              <b>hi &lt; 0</b>：連最多的可能都變負，代表 )
+              已經多到怎麼選都配不完，直接回傳 False。
+            </p>
+            <p>
+              <b>lo = max(lo, 0)</b>：數量 −1 的那些選法讓某個 )
+              找不到對象，是不合法的選法，刪掉它們，下緣回到 0。
+            </p>
+            <p>
+              最後 <b>lo == 0</b> 表示 0
+              在範圍裡：存在一種選法剛好全部配完。時間 O(n)，空間 O(1)。
+            </p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span
+          >678 / ( 往上、) 往下、* 撐開；跌破地板的剪掉，上緣跌破就失敗。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>
