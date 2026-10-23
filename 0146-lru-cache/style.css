@@ -1116,97 +1116,50 @@ footer {
   border-color: var(--mint);
 }
 
-textarea {
-  display: block;
-  width: 100%;
-  margin-top: 3px;
-  background: var(--field);
+.row-heading {
+  display: flex;
+  justify-content: space-between;
+  margin: 7px 14px 0;
+  font: 12px var(--mono);
   color: var(--text);
-  border: 1px solid var(--line-2);
-  border-radius: 6px;
-  padding: 6px;
-  font: 12px/1.4 var(--mono);
-  resize: vertical;
 }
-textarea:focus-visible {
-  outline: 2px solid var(--mint);
-}
-.chain {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  overflow: auto;
-  padding: 10px 0;
-  min-height: 55px;
-  white-space: nowrap;
-  font: 12px var(--mono);
-}
-.chip {
-  display: inline-block;
-  padding: 5px 8px;
-  background: var(--active-bg);
-  border: 1px solid var(--active-line);
-  border-radius: 5px;
-  font: 12px var(--mono);
-  color: var(--mint);
-}
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 7px 0;
-  min-height: 35px;
-}
-#locals {
-  margin: 0 14px;
+.row-heading span {
   color: var(--muted);
-  font: 12px var(--mono);
+  font: 11px var(--sans);
 }
-.table-scroll {
-  max-height: 220px;
-  overflow: auto;
-  margin: 0 14px 7px;
+.array {
+  min-width: 0;
+  padding-top: 26px;
+  padding-bottom: 6px;
 }
-table {
-  border-collapse: collapse;
-  width: 100%;
-  font: 12px/1.4 var(--mono);
+.cell {
+  width: 76px;
 }
-caption {
-  text-align: left;
-  color: var(--muted);
-  font: 12px var(--sans);
-  padding: 4px 0;
+.value {
+  font-size: 15px;
+  padding: 3px;
+  overflow-wrap: anywhere;
+  height: auto;
+  min-height: 42px;
 }
-th,
-td {
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-}
-th {
-  color: var(--muted);
-}
-td.changed {
-  color: var(--orange);
-  background: var(--focus-bg);
-}
-tr.inactive {
-  color: var(--faint);
-}
-#code {
-  max-height: 490px;
-  overflow-y: auto;
-  scroll-behavior: smooth;
+.pointer {
+  bottom: 65px;
 }
 .stats {
   flex-wrap: wrap;
 }
 .stats b {
-  font-size: 17px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.comparison strong {
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.comparison > div {
+  display: block !important;
 }
 .explanation output {
-  font-size: 13px;
   overflow-wrap: anywhere;
 }
 @media (max-width: 400px) {
@@ -1281,5 +1234,362 @@ footer {
   }
   .heading h1 {
     font-size: 20px;
+  }
+}
+
+/* 146: node modules, pointer wires and the cache dict. */
+:root {
+  --nxt: #0b8a73;
+  --prev: #2f6fe0;
+  --prev-bg: #e3ecfd;
+  --dict: #7a4fd6;
+  --dict-bg: #eee7fd;
+  --done-c: #0b8a73;
+  --done-bg: #dcf2ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --nxt: #4fd1b0;
+    --prev: #7ea8ff;
+    --prev-bg: #1a2a47;
+    --dict: #b69cff;
+    --dict-bg: #2a2142;
+    --done-c: #4fd1b0;
+    --done-bg: #12392f;
+  }
+}
+.inputs .num-input {
+  width: 110px;
+}
+.row-heading .legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 11px var(--mono);
+}
+.lg {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid;
+  margin-left: 8px;
+}
+.lg.nxt {
+  border-color: var(--nxt);
+}
+.lg.prev {
+  border-color: var(--prev);
+}
+.lg.dict {
+  border-color: var(--dict);
+  border-top-style: dashed;
+}
+.array-scroll {
+  padding: 4px 14px 6px;
+}
+.board {
+  display: block;
+  overflow: visible;
+}
+.zone {
+  font: 600 11px var(--mono);
+  fill: var(--faint);
+  letter-spacing: 0.04em;
+}
+.head.nxt {
+  fill: var(--nxt);
+}
+.head.prev {
+  fill: var(--prev);
+}
+.head.dict {
+  fill: var(--dict);
+}
+.head.hot {
+  fill: var(--focus);
+}
+.wire {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition:
+    stroke 0.2s,
+    stroke-width 0.2s;
+}
+.wire.nxt {
+  stroke: var(--nxt);
+  marker-end: url(#head-nxt);
+}
+.wire.prev {
+  stroke: var(--prev);
+  marker-end: url(#head-prev);
+}
+.wire.dict {
+  stroke: var(--dict);
+  stroke-dasharray: 0.02 0.012;
+  marker-end: url(#head-dict);
+  opacity: 0.75;
+}
+.wire.stale {
+  stroke-dasharray: 0.025 0.02;
+  stroke-width: 1.5;
+}
+.wire.hot {
+  stroke: var(--focus);
+  stroke-width: 3;
+  marker-end: url(#head-hot);
+}
+.wire.hot.draw {
+  stroke-dasharray: 1;
+  animation: draw 0.45s var(--ease) both;
+}
+@keyframes draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.node .box {
+  fill: var(--panel);
+  stroke: var(--line-3);
+  stroke-width: 1.5;
+  transition:
+    fill 0.25s,
+    stroke 0.25s,
+    stroke-width 0.25s;
+}
+.node .halo {
+  fill: none;
+  stroke: var(--focus);
+  stroke-width: 2;
+  stroke-dasharray: 4 4;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.node .rule {
+  stroke: var(--line-2);
+  fill: none;
+}
+.node-id {
+  font: 700 12px var(--mono);
+  fill: var(--text);
+}
+.node-tag {
+  font: 10px var(--mono);
+  fill: var(--faint);
+  text-anchor: end;
+}
+.port-name {
+  font: 9px var(--mono);
+  fill: var(--faint);
+  text-anchor: middle;
+}
+.port {
+  font: 700 13px var(--mono);
+  text-anchor: middle;
+  fill: var(--faint);
+  transition: fill 0.2s;
+}
+.port.hot {
+  fill: var(--focus);
+}
+.data {
+  font: 600 13px var(--mono);
+  text-anchor: middle;
+  fill: var(--text);
+}
+.data.val {
+  font-weight: 500;
+  fill: var(--muted);
+}
+.data.dim {
+  fill: var(--faint);
+}
+.node.sentinel .box {
+  fill: var(--well);
+  stroke-dasharray: 5 3;
+}
+.node.cur .box {
+  fill: var(--focus-bg);
+  stroke: var(--focus);
+  stroke-width: 2.5;
+}
+.node.lru .box {
+  fill: color-mix(in srgb, var(--danger) 12%, var(--panel));
+  stroke: var(--danger);
+  stroke-width: 2.5;
+}
+.node.fresh .halo,
+.node.cur .halo {
+  opacity: 1;
+}
+.node.out .box {
+  stroke-dasharray: 6 4;
+}
+.node.gone .box {
+  stroke: var(--danger);
+}
+.flag.empty {
+  visibility: hidden;
+}
+.flag-stem {
+  stroke: var(--focus);
+  stroke-width: 1.5;
+}
+.flag-pill {
+  fill: var(--focus-bg);
+  stroke: var(--focus);
+}
+.flag-text {
+  font: 600 11px var(--mono);
+  fill: var(--focus);
+  text-anchor: middle;
+}
+.entry .slot {
+  fill: var(--dict-bg);
+  stroke: var(--dict);
+  stroke-width: 1.5;
+  transition: stroke-width 0.2s;
+}
+.entry-key {
+  font: 700 14px var(--mono);
+  fill: var(--dict);
+  text-anchor: middle;
+}
+.entry.hot .slot {
+  stroke: var(--focus);
+  stroke-width: 3;
+}
+.entry.gone .slot {
+  stroke: var(--danger);
+  stroke-dasharray: 4 3;
+}
+.strips {
+  display: grid;
+  gap: 8px;
+  margin: 0 25px;
+}
+.strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 36px;
+}
+.strip-name {
+  flex: 0 0 34px;
+  font: 600 12px var(--mono);
+  color: var(--muted);
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip-row .chip {
+  font-size: 12px;
+}
+.chip-row .chip.new {
+  animation: slide-in 0.35s var(--ease) both;
+}
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.96);
+  }
+}
+.chip.empty {
+  color: var(--faint);
+  background: none;
+  border-style: dashed;
+}
+.formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 58px;
+  margin: 12px 25px 10px;
+  padding: 12px 14px;
+  background: var(--well);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font: 600 14px var(--mono);
+  background: var(--cell);
+  border: 1px solid var(--line-2);
+  animation: chip-in 0.3s var(--ease) both;
+  animation-delay: calc(var(--k) * 45ms);
+}
+.chip.op {
+  padding: 0 2px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+}
+.chip.nxt {
+  color: var(--nxt);
+}
+.chip.prev {
+  color: var(--prev);
+  background: var(--prev-bg);
+}
+.chip.old {
+  color: var(--faint);
+  text-decoration: line-through;
+}
+.chip.hot,
+.chip.cur,
+.chip.local {
+  color: var(--focus);
+  background: var(--focus-bg);
+  border-color: color-mix(in srgb, var(--focus) 45%, transparent);
+}
+.chip.dict {
+  color: var(--dict);
+  background: var(--dict-bg);
+  border-color: color-mix(in srgb, var(--dict) 45%, transparent);
+}
+.chip.done {
+  color: var(--done-c);
+  background: var(--done-bg);
+  border-color: color-mix(in srgb, var(--done-c) 45%, transparent);
+}
+.chip.bad {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel));
+  border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+}
+.chip.strong {
+  box-shadow: 0 0 0 2px currentColor;
+}
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+}
+#size.over {
+  color: var(--danger);
+}
+.insight b {
+  font-family: var(--mono);
+  color: var(--text);
+}
+@media (max-width: 599px) {
+  .strips,
+  .formula {
+    margin-inline: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wire.hot.draw,
+  .chip,
+  .chip-row .chip.new {
+    animation: none;
   }
 }

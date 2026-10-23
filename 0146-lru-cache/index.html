@@ -6,11 +6,11 @@
     <title>146 · LRU Cache｜演算法動畫</title>
     <meta
       name="description"
-      content="逐步觀察 LRU 快取查詢、雙向串列操作與容量淘汰。"
+      content="把節點畫成方塊、指標畫成箭頭，看 put / get 時 prev、nxt 與 cache 字典怎麼一根一根改變。"
     />
     <link
       rel="icon"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231011463'/%3E%3Cpath d='M11 8H7v16h4m10-16h4v16h-4M15 12v8m4-8v8' stroke='%2359e0bd' fill='none' stroke-width='2'/%3E%3C/svg%3E"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Crect x='4' y='11' width='9' height='10' rx='2' fill='none' stroke='%2359e0bd' stroke-width='2'/%3E%3Crect x='19' y='11' width='9' height='10' rx='2' fill='none' stroke='%2359e0bd' stroke-width='2'/%3E%3Cpath d='M13 14h6M19 18h-6' stroke='%23f2b04a' stroke-width='2'/%3E%3C/svg%3E"
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -35,84 +35,127 @@
           <p class="eyebrow">ALGO 146 <span>MEDIUM</span></p>
           <h1><a class="back-home" href="../">題目目錄</a>LRU Cache</h1>
           <p>
-            用雜湊表快速查找，用雙向串列維護<span class="accent"
-              >最近使用順序</span
+            字典負責一步找到節點，雙向串列負責排順序：<span class="accent"
+              >左邊最久沒用，右邊最近使用</span
             >。
           </p>
         </div>
         <div class="complexity">
-          GET / PUT <b>平均 O(1)</b><small>空間 O(capacity)</small>
+          GET / PUT <b>O(1)</b><small>空間 O(capacity)</small>
         </div>
       </section>
       <form id="inputs" class="inputs">
-        <label
+        <label class="num-input"
           >capacity<input
             id="capacity"
-            type="number"
-            min="1"
-            max="6"
             value="2"
-            required /></label
+            inputmode="numeric"
+            autocomplete="off" /></label
         ><label class="array-input"
-          >操作（JSON 陣列）<textarea
+          >操作<input
             id="operations"
-            rows="2"
-            spellcheck="false"
-          >
-[["put",1,1],["put",2,2],["get",1],["put",3,3],["get",2],["put",4,4],["get",1],["get",3],["get",4]]</textarea
-          ></label
+            value='[["put",1,1],["put",2,2],["get",1],["put",3,3],["get",2],["put",4,4],["get",1],["get",3],["get",4]]'
+            autocomplete="off"
+            spellcheck="false" /></label
         ><button type="submit" class="apply">套用輸入</button>
         <div class="examples">
           <span>試試看</span
-          ><button type="button" data-example="classic">經典淘汰</button
-          ><button type="button" data-example="update">更新同 key</button
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="middle">從中間取出</button
+          ><button type="button" data-example="update">更新同一個 key</button
           ><button type="button" data-example="one">容量為 1</button
-          ><button type="button" data-example="miss">連續未命中</button>
+          ><button type="button" data-example="miss">查不到</button>
         </div>
         <p id="error" role="alert"></p>
       </form>
       <div class="workspace">
         <section class="panel visualization" aria-label="LRU 快取動畫">
           <div class="panel-head">
-            <span>01 / 快取與使用順序</span
+            <span>01 / 字典與雙向串列</span
             ><span id="phase" class="tag">INITIALIZE</span>
           </div>
           <div class="stats">
-            <div><small>size / capacity</small><b id="size"></b></div>
-            <div><small>操作</small><b id="operation"></b></div>
+            <div><small>操作</small><b id="operation">—</b></div>
+            <div><small>len(cache) / capacity</small><b id="size">0</b></div>
+            <div class="target"><small>回傳</small><b id="ret">—</b></div>
           </div>
-          <div class="start-range">
-            <div class="section-label">
-              沿 left.next 走訪 <span>LRU → MRU；L / R 為哨兵</span>
+          <div class="row-heading">
+            記憶體
+            <span class="legend"
+              ><i class="lg nxt"></i>nxt <i class="lg prev"></i>prev
+              <i class="lg dict"></i>cache[key]</span
+            >
+          </div>
+          <div class="array-scroll" id="scroll">
+            <svg
+              id="board"
+              class="board"
+              role="img"
+              aria-label="LRU 快取記憶體圖"
+            >
+              <defs>
+                <marker
+                  id="head-nxt"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M0 0L10 5L0 10z" class="head nxt" />
+                </marker>
+                <marker
+                  id="head-prev"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M0 0L10 5L0 10z" class="head prev" />
+                </marker>
+                <marker
+                  id="head-dict"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M0 0L10 5L0 10z" class="head dict" />
+                </marker>
+                <marker
+                  id="head-hot"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto"
+                >
+                  <path d="M0 0L10 5L0 10z" class="head hot" />
+                </marker>
+              </defs>
+              <text class="zone" id="zone-dict" x="14" y="16">cache</text>
+              <text class="zone" id="zone-out" x="14" y="0">
+                不在串列上的節點
+              </text>
+              <g id="wires"></g>
+              <g id="dict"></g>
+              <g id="nodes"></g>
+              <g id="flags"></g>
+            </svg>
+          </div>
+          <div id="formula" class="formula" aria-live="polite"></div>
+          <div class="strips">
+            <div class="strip">
+              <span class="strip-name">輸出</span>
+              <div id="results" class="chip-row"></div>
             </div>
-            <div id="chain" class="chain"></div>
           </div>
-          <div class="start-range">
-            <div class="section-label">
-              cache <span>key → 節點（value）</span>
-            </div>
-            <div id="cache" class="chips"></div>
-          </div>
-          <div id="locals" class="chips"></div>
-          <div class="table-scroll">
-            <table>
-              <caption>
-                實際雙向指標（橘色為本步改寫）
-              </caption>
-              <thead>
-                <tr>
-                  <th>節點</th>
-                  <th>key : value</th>
-                  <th>prev</th>
-                  <th>next</th>
-                </tr>
-              </thead>
-              <tbody id="nodes"></tbody>
-            </table>
-          </div>
-          <p class="signed-note">
-            每次指標賦值單獨播放，中途連結可能不對稱。表格保留本次執行建立的節點供觀察；已摘下的舊節點不代表仍在快取中。
-          </p>
           <div class="explanation" aria-live="polite">
             <span id="step-label">STEP 01</span>
             <h2 id="title"></h2>
@@ -148,30 +191,32 @@
           </div>
           <pre id="code" aria-label="原始 Python 程式碼"></pre>
           <details class="insight">
-            <summary>原理說明：為什麼需要兩種結構？</summary>
-            <h2>查找靠 cache，順序靠雙向串列。</h2>
+            <summary>原理說明：為什麼要字典加雙向串列？</summary>
+            <h2>字典找得快，串列搬得快。</h2>
             <p>
-              cache 將 key 對應到節點，平均 O(1) 查到資料。remove 使用節點的
-              prev、next 直接摘下節點；insert 將它接到 right 前方成為 MRU。
+              <b>cache</b> 把 key 對到節點本身，所以 get
+              不用從頭走訪，一步就拿到節點。
             </p>
             <p>
-              get 命中後也算一次使用，會重新插到 MRU；未命中回傳
-              −1，順序不變。put 更新現有 key
-              時，這份程式會移除舊節點並建立新節點。
+              拿到節點後，因為它有 <b>prev</b> 和 <b>nxt</b>，remove
+              只要改兩根指標就能把它摘下；insert 再改四根指標把它接到
+              <b>right</b> 前面。整個搬移不需要移動其他節點。
             </p>
             <p>
-              容量超限時，left.next 就是 LRU，須同時從串列和 cache
-              移除。哨兵不算容量；操作完成時兩種結構的有效項目一致。
+              left、right
+              是兩個不存資料的哨兵，讓「串列是空的」或「節點在最邊邊」都不用特別處理。
+              <b>left.nxt</b>
+              永遠是最久沒用的節點，容量超過時就淘汰它，並從字典刪掉它的 key。
             </p>
             <p>
-              get / put 平均 O(1)，空間
-              O(capacity)。動畫另外保留逐行快照與歷史節點。
+              節點方塊上的 N1、N2 是節點本身的身分，key、val 是它存的資料。put
+              同一個 key 時，這份程式會建立新節點，舊節點就沒有人再指向它。
             </p>
           </details>
         </aside>
       </div>
       <footer>
-        <span>146 / 左側淘汰 LRU，右側插入 MRU。</span
+        <span>146 / 字典指向節點，節點互相指向；淘汰永遠從 left.nxt 開始。</span
         ><span>原生 HTML · CSS · JavaScript</span>
       </footer>
     </main>

@@ -1,213 +1,258 @@
 /*
- * Actual pointer writes are captured separately, including transient
- * asymmetric links.
+ * Mirrors the Python LRUCache line by line; snapshots are for playback.
+ * Nodes keep a stable identity (left, right, N1, N2 …) separate from key / val,
+ * and every pointer write is recorded so the view can draw it.
  */
 (function (root) {
   function trace(capacity, operations) {
+    if (!Number.isInteger(capacity) || capacity < 1 || capacity > 6) {
+      throw new Error('capacity 需介於 1 到 6。');
+    }
     if (
-      !Number.isInteger(capacity) ||
-      capacity < 1 ||
-      capacity > 6 ||
       !Array.isArray(operations) ||
       !operations.length ||
-      operations.length > 20 ||
-      operations.some(
-        (op) =>
-          !Array.isArray(op) ||
-          !['get', 'put'].includes(op[0]) ||
-          op.length !== (op[0] === 'get' ? 2 : 3) ||
-          op.slice(1).some((v) => !Number.isInteger(v) || Math.abs(v) > 999),
-      )
+      operations.length > 20
     ) {
-      throw new Error(
-        '容量須為 1–6；操作為 1–20 筆 ["get", key] 或 ["put", key, value]，整數介於 ±999。',
-      );
+      throw new Error('操作需有 1 到 20 筆。');
     }
-    const nodes = {
-      L: {key: 0, val: 0, prev: null, next: null},
-      R: {key: 0, val: 0, prev: null, next: null},
-    };
+    for (const op of operations) {
+      const ok =
+        Array.isArray(op) &&
+        ['get', 'put'].includes(op[0]) &&
+        op.length === (op[0] === 'get' ? 2 : 3) &&
+        op.slice(1).every((v) => Number.isInteger(v) && Math.abs(v) <= 999);
+      if (!ok) {
+        throw new Error(
+          '每筆操作是 ["get", key] 或 ["put", key, value]，整數介於 ±999。',
+        );
+      }
+    }
+    const nodes = {};
     const cache = new Map();
     const frames = [];
     const results = [];
     let serial = 0;
     let operation = -1;
     let locals = {};
-    function add(phase, line, title, note, changed) {
+    let changed = [];
+    function add(phase, line, title, note, extra = {}) {
       frames.push({
         phase,
         line,
         title,
         note,
-        changed,
         operation,
+        changed,
         locals: {...locals},
         nodes: Object.fromEntries(
           Object.entries(nodes).map(([id, n]) => [id, {...n}]),
         ),
         cache: [...cache],
         results: [...results],
+        ...extra,
       });
+      changed = [];
     }
+    function set(id, field, to) {
+      nodes[id][field] = to;
+      changed.push(`${id}.${field}`);
+    }
+    add('init', [10, 11, 12], '建立空的 cache', `capacity = ${capacity}。`);
+    nodes.left = {key: 0, val: 0, prev: null, nxt: null};
+    nodes.right = {key: 0, val: 0, prev: null, nxt: null};
     add(
       'init',
-      [12, 13, 17, 18],
-      '建立容量、雜湊表與兩個哨兵',
-      'L 與 R 不儲存有效快取項目；先建立節點，再連接。',
+      [13],
+      '建立兩個哨兵節點 left、right',
+      '哨兵只用來標記兩端，不存資料，也不算進容量。指標一開始都是 None。',
     );
-    nodes.L.next = 'R';
-    add('link', [20], '連接 left.next', 'left.next 指向 right。', 'L.next');
-    nodes.R.prev = 'L';
-    add('link', [21], '連接 right.prev', '空串列：L ⇄ R。', 'R.prev');
-    function remove(id, callLine) {
-      locals = {node: id};
+    set('left', 'nxt', 'right');
+    set('right', 'prev', 'left');
+    add(
+      'link',
+      [14],
+      'left.nxt = right，right.prev = left',
+      '空串列：left ⇄ right。之後左邊是最久沒用（LRU），右邊是最近使用（MRU）。',
+    );
+    function remove(id, callLine, caller) {
+      locals = {...caller, node: id};
       add(
         'remove',
-        [callLine],
-        '呼叫 remove(node)',
-        '把節點從串列摘下；此函式不刪除 cache 項目。',
+        [callLine, 21],
+        `呼叫 remove(${id})`,
+        '把節點從串列中間摘下來；remove 不會動 cache。',
       );
-      const prev = nodes[id].prev;
-      const nxt = nodes[id].next;
-      locals.prev = prev;
-      add('remove', [24], '保存前一個節點', `prev = ${prev}`);
-      locals.nxt = nxt;
-      add('remove', [25], '保存後一個節點', `nxt = ${nxt}`);
-      nodes[prev].next = nxt;
+      const curPrev = nodes[id].prev;
+      locals.cur_prev = curPrev;
+      add('remove', [22], `cur_prev = ${curPrev}`, `記住 ${id} 前面的節點。`);
+      const curNxt = nodes[id].nxt;
+      locals.cur_nxt = curNxt;
+      add('remove', [23], `cur_nxt = ${curNxt}`, `記住 ${id} 後面的節點。`);
+      set(curPrev, 'nxt', curNxt);
       add(
         'link',
-        [27],
-        '前節點跨過 node',
-        'prev.next = nxt；中途兩向連結可能尚未對稱。',
-        `${prev}.next`,
+        [24],
+        `${curPrev}.nxt = ${curNxt}`,
+        `往右走的箭頭跳過 ${id}，${id} 離開串列。`,
       );
-      nodes[nxt].prev = prev;
+      set(curNxt, 'prev', curPrev);
       add(
         'link',
-        [28],
-        '後節點接回 prev',
-        'nxt.prev = prev。被摘下節點本身的 prev、next 仍保留舊值。',
-        `${nxt}.prev`,
+        [25],
+        `${curNxt}.prev = ${curPrev}`,
+        `往左走的箭頭也接好了。${id} 自己的 prev、nxt 還指著舊鄰居，但已經沒有人指向它。`,
       );
+      locals = {...caller};
     }
-    function insert(id, callLine) {
-      locals = {node: id};
+    function insert(id, callLine, caller) {
+      locals = {...caller, node: id};
       add(
         'insert',
-        [callLine],
-        '呼叫 insert(node)',
-        '插入 right 前方，成為最近使用的項目。',
+        [callLine, 16],
+        `呼叫 insert(${id})`,
+        '把節點接到 right 的前面，成為最近使用（MRU）。',
       );
-      const prev = nodes.R.prev;
-      const nxt = 'R';
-      locals.prev = prev;
-      add('insert', [31], '取得原本的 MRU', `prev = ${prev}`);
-      locals.nxt = nxt;
-      add('insert', [32], 'nxt 指向 right', 'nxt = R');
-      for (const [owner, field, to, line] of [
-        [prev, 'next', id, 34],
-        [nxt, 'prev', id, 35],
-        [id, 'prev', prev, 37],
-        [id, 'next', nxt, 38],
-      ]) {
-        nodes[owner][field] = to;
-        add(
-          'link',
-          [line],
-          '逐條建立雙向連結',
-          `${owner}.${field} = ${to}`,
-          `${owner}.${field}`,
-        );
-      }
+      const curHead = nodes.right.prev;
+      locals.cur_head = curHead;
+      add(
+        'insert',
+        [17],
+        `cur_head = right.prev = ${curHead}`,
+        `${curHead} 是目前最右邊的節點，新節點要接在它和 right 中間。`,
+      );
+      set(curHead, 'nxt', id);
+      set('right', 'prev', id);
+      add(
+        'link',
+        [18],
+        `${curHead}.nxt = ${id}，right.prev = ${id}`,
+        `兩個鄰居同時改指向 ${id}。`,
+      );
+      set(id, 'prev', curHead);
+      set(id, 'nxt', 'right');
+      add(
+        'link',
+        [19],
+        `${id}.prev = ${curHead}，${id}.nxt = right`,
+        `${id} 的兩根指標也接上，雙向連結完成。`,
+      );
+      locals = {...caller};
     }
     operations.forEach((op, index) => {
       operation = index;
       locals = {};
       const [type, key, value] = op;
-      add(
-        'operation',
-        [type === 'get' ? 40 : 52],
-        `操作 ${index + 1}：${type}(${op.slice(1).join(', ')})`,
-        '先由雜湊表查找 key。',
-      );
       if (type === 'get') {
+        add('call', [27], `get(${key})`, `查詢 key ${key}。`, {key});
+        const hit = cache.has(key);
         add(
           'lookup',
-          [41],
-          cache.has(key) ? '命中快取' : '快取未命中',
-          `key ${key} ${cache.has(key) ? '存在' : '不存在'}於 cache。`,
+          [28],
+          hit ? `${key} 在 cache 裡` : `${key} 不在 cache 裡`,
+          hit
+            ? '命中，接下來要把它移到最右邊（MRU）。'
+            : '沒有這個 key，直接回傳 −1。',
+          {key, hit},
         );
-        if (!cache.has(key)) {
+        if (!hit) {
           results.push(-1);
-          add('return', [42], '回傳 −1', '未命中不改變使用順序。');
+          add('return', [29], '回傳 −1', '查不到時，使用順序不變。', {key});
           return;
         }
         const id = cache.get(key);
         locals = {node: id};
-        add('lookup', [44], '取得節點', `cache[${key}] → ${id}`);
-        remove(id, 47);
-        insert(id, 48);
-        results.push(nodes[id].val);
-        add('return', [50], `回傳 ${nodes[id].val}`, '命中項目已移至 MRU。');
-      } else {
         add(
           'lookup',
-          [53],
-          cache.has(key) ? 'key 已存在，先摘下舊節點' : 'key 不存在，新增項目',
-          '依提供的程式，更新 key 時會建立新 Node，而非修改原節點。',
+          [30, 31],
+          `node = cache[${key}] = ${id}`,
+          `字典直接給出節點 ${id}，不用從頭走訪串列。`,
+          {key, hit: true},
         );
-        if (cache.has(key)) remove(cache.get(key), 54);
-        const id = `N${++serial}`;
-        nodes[id] = {key, val: value, prev: null, next: null};
-        locals = {node: id};
+        remove(id, 32, {node: id});
+        insert(id, 33, {node: id});
+        results.push(nodes[id].val);
         add(
-          'create',
-          [56],
-          '建立新的 Node',
-          `${id}：key=${key}, value=${value}`,
+          'return',
+          [35],
+          `回傳 ${id}.val = ${nodes[id].val}`,
+          `${id} 現在在最右邊，是最近使用的節點。`,
+          {key},
         );
-        cache.set(key, id);
+        return;
+      }
+      add('call', [37], `put(${key}, ${value})`, `寫入 key ${key}。`, {key});
+      const had = cache.has(key);
+      add(
+        'lookup',
+        [38],
+        had ? `${key} 已經在 cache 裡` : `${key} 不在 cache 裡`,
+        had
+          ? '這份程式的作法是先把舊節點摘下，再建立一個新節點。'
+          : '直接建立新節點。',
+        {key, hit: had},
+      );
+      if (had) remove(cache.get(key), 39, {});
+      const id = `N${++serial}`;
+      nodes[id] = {key, val: value, prev: null, nxt: null};
+      locals = {node: id};
+      add(
+        'create',
+        [41],
+        `node = Node(${key}, ${value}) → ${id}`,
+        `${id} 是新節點的身分，key=${key}、val=${value} 是它存的資料。指標都還是 None。`,
+        {key},
+      );
+      const old = cache.get(key);
+      cache.set(key, id);
+      add(
+        'cache',
+        [42],
+        `cache[${key}] = ${id}`,
+        old
+          ? `字典的 ${key} 改指向新節點 ${id}，舊節點 ${old} 沒有人再指向它。`
+          : `字典新增 ${key} → ${id}，但 ${id} 還沒接進串列。`,
+        {key, dropped: old ?? null},
+      );
+      insert(id, 43, {node: id});
+      const over = cache.size > capacity;
+      add(
+        'capacity',
+        [45],
+        `len(cache) = ${cache.size} ${over ? '>' : '≤'} ${capacity}`,
+        over ? '超過容量，要淘汰最久沒用的節點。' : '沒有超過容量。',
+        {key, over},
+      );
+      if (over) {
+        const lru = nodes.left.nxt;
+        locals = {node: id, lru};
+        add(
+          'evict',
+          [46],
+          `lru = left.nxt = ${lru}`,
+          `left 右邊的第一個節點 ${lru}（key ${nodes[lru].key}）最久沒被使用。`,
+          {key},
+        );
+        remove(lru, 47, {node: id, lru});
+        const lruKey = nodes[lru].key;
+        cache.delete(lruKey);
         add(
           'cache',
-          [57],
-          '更新雜湊表',
-          `cache[${key}] = ${id}。此刻新節點尚未插入串列。`,
+          [48],
+          `del cache[${lruKey}]`,
+          `字典刪掉 ${lruKey}，${lru} 從兩個結構都消失了。`,
+          {key: lruKey, dropped: lru},
         );
-        insert(id, 58);
-        add(
-          'capacity',
-          [60],
-          cache.size > capacity ? '容量超限，準備淘汰' : '容量未超限',
-          `${cache.size} > ${capacity} 為 ${cache.size > capacity ? 'True' : 'False'}。`,
-        );
-        if (cache.size > capacity) {
-          const lru = nodes.L.next;
-          locals = {lru};
-          add(
-            'evict',
-            [61],
-            '取得最久未使用的節點',
-            `left.next = ${lru}，key=${nodes[lru].key}`,
-          );
-          remove(lru, 63);
-          cache.delete(nodes[lru].key);
-          add(
-            'cache',
-            [64],
-            '從 cache 刪除 LRU',
-            `del cache[${nodes[lru].key}]；串列與雜湊表皆移除該項目。`,
-          );
-        }
-        results.push(null);
-        add('return', [52], 'put 完成', 'put 沒有回傳值（None）。');
       }
+      results.push(null);
+      add('return', [37], 'put 完成', 'put 沒有回傳值（None）。', {key});
     });
+    operation = operations.length;
     locals = {};
     add(
       'done',
       [],
       '所有操作完成',
-      '輸出依操作順序排列；null 代表 put 回傳 None。',
+      '輸出依操作順序排列；null 是 put 的 None。',
     );
     return frames;
   }
