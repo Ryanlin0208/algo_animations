@@ -2,7 +2,7 @@
 
 **網站：<https://ryanlin0208.github.io/algo_animations/>**
 
-十八道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
+十九道互動演算法動畫，使用原生 HTML、CSS、JavaScript；不需要安裝套件、建置或後端服務。
 
 網站部署後，從根目錄的 `index.html` 開始。所有題目與資源使用相對路徑，可放在任意 GitHub 帳號與儲存庫名稱下。
 
@@ -20,6 +20,7 @@
 | 621 | Task Scheduler | [開啟](./0621-task-scheduler/) |
 | 658 | Find K Closest Elements | [開啟](./0658-find-k-closest/) |
 | 678 | Valid Parenthesis String | [開啟](./0678-valid-parenthesis-string/) |
+| 684 | Redundant Connection | [開啟](./0684-redundant-connection/) |
 | 739 | Daily Temperatures | [開啟](./0739-daily-temperatures/) |
 | 767 | Reorganize String | [開啟](./0767-reorganize-string/) |
 | 853 | Car Fleet | [開啟](./0853-car-fleet/) |
@@ -59,6 +60,7 @@ README.md                   專案說明
 0621-task-scheduler/
 0658-find-k-closest/
 0678-valid-parenthesis-string/
+0684-redundant-connection/
 0739-daily-temperatures/
 0767-reorganize-string/
 0853-car-fleet/
@@ -88,6 +90,7 @@ node 0560-subarray-sum-equals-k/check.cjs
 node 0621-task-scheduler/check.cjs
 node 0658-find-k-closest/check.cjs
 node 0678-valid-parenthesis-string/check.cjs
+node 0684-redundant-connection/check.cjs
 node 0739-daily-temperatures/check.cjs
 node 0767-reorganize-string/check.cjs
 node 0853-car-fleet/check.cjs

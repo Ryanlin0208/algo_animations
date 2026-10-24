@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>684 · Redundant Connection｜演算法動畫</title>
+    <meta
+      name="description"
+      content="邊一條條加進圖裡，看 parent 指標怎麼合併成一棵棵樹、find 怎麼路徑壓縮，以及哪一條邊造成環。"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23101923'/%3E%3Cpath d='M9 22 16 10 23 22Z' stroke='%2359e0bd' fill='none' stroke-width='2' stroke-linejoin='round'/%3E%3Ccircle cx='16' cy='10' r='3' fill='%23f2b04a'/%3E%3Ccircle cx='9' cy='22' r='3' fill='%2359e0bd'/%3E%3Ccircle cx='23' cy='22' r='3' fill='%2359e0bd'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../assets/theme.css" />
+    <script defer src="algorithm.js"></script>
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="../"
+          ><span class="mark">A</span> ALGO ANIMATION</a
+        ><span class="edition">UNION FIND / 684</span>
+      </header>
+      <section class="heading">
+        <div>
+          <p class="eyebrow">ALGO 684 <span>MEDIUM</span></p>
+          <h1>
+            <a class="back-home" href="../">題目目錄</a>Redundant Connection
+          </h1>
+          <p>
+            每加一條邊就問兩端的老大是誰：<span class="accent"
+              >老大不同就合併，老大相同代表這條邊造成環</span
+            >。
+          </p>
+        </div>
+        <div class="complexity">
+          TIME <b>O(n · α(n))</b><small>空間 O(n)：parent 陣列</small>
+        </div>
+      </section>
+      <form id="inputs" class="inputs">
+        <label class="array-input"
+          >edges<input
+            id="edges"
+            value="[[1,2],[2,3],[3,4],[1,4],[1,5]]"
+            autocomplete="off"
+            spellcheck="false" /></label
+        ><button type="submit" class="apply">套用輸入</button>
+        <div class="examples">
+          <span>試試看</span
+          ><button type="button" data-example="classic">經典範例</button
+          ><button type="button" data-example="square">四邊形加一條</button
+          ><button type="button" data-example="chain">長鏈壓縮</button
+          ><button type="button" data-example="last">環在最後</button
+          ><button type="button" data-example="star">星狀</button
+          ><button type="button" data-example="merge">兩組合併</button>
+        </div>
+        <p id="error" role="alert"></p>
+      </form>
+      <div class="workspace">
+        <section class="panel visualization" aria-label="並查集動畫">
+          <div class="panel-head">
+            <span>01 / 圖與 parent 森林</span
+            ><span id="phase" class="tag">INITIALIZE</span>
+          </div>
+          <div class="stats">
+            <div><small>邊</small><b id="edge-no">—</b></div>
+            <div><small>[a, b]</small><b id="ab">—</b></div>
+            <div><small>ra</small><b id="ra">—</b></div>
+            <div><small>rb</small><b id="rb">—</b></div>
+          </div>
+          <div class="boards">
+            <figure class="board">
+              <figcaption>
+                圖<span>邊依序加入；顏色 = 所屬的組</span>
+              </figcaption>
+              <svg id="graph" role="img" aria-label="依序加入邊的無向圖">
+                <g id="g-edges"></g>
+                <g id="g-nodes"></g>
+              </svg>
+            </figure>
+            <figure class="board">
+              <figcaption>
+                parent 森林<span>箭頭指向 parent；最上面是老大</span>
+              </figcaption>
+              <div class="forest-scroll" id="forest-scroll">
+                <svg id="forest" role="img" aria-label="parent 指標組成的森林">
+                  <defs>
+                    <marker
+                      id="up"
+                      viewBox="0 0 10 10"
+                      refX="9"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto"
+                    >
+                      <path d="M0 0L10 5L0 10z" class="head" />
+                    </marker>
+                    <marker
+                      id="up-hot"
+                      viewBox="0 0 10 10"
+                      refX="9"
+                      refY="5"
+                      markerWidth="6"
+                      markerHeight="6"
+                      orient="auto"
+                    >
+                      <path d="M0 0L10 5L0 10z" class="head hot" />
+                    </marker>
+                  </defs>
+                  <g id="f-links"></g>
+                  <g id="f-nodes"></g>
+                </svg>
+              </div>
+            </figure>
+          </div>
+          <div class="strips">
+            <div class="strip">
+              <span class="strip-name">parent</span>
+              <div id="parent" class="cells"></div>
+            </div>
+            <div class="strip">
+              <span class="strip-name">find</span>
+              <div id="stack" class="chip-row"></div>
+            </div>
+            <div class="strip">
+              <span class="strip-name">edges</span>
+              <div id="edge-list" class="chip-row"></div>
+            </div>
+          </div>
+          <div id="formula" class="formula" aria-live="polite"></div>
+          <div class="explanation" aria-live="polite">
+            <span id="step-label">STEP 01</span>
+            <h2 id="title"></h2>
+            <p id="note"></p>
+            <output id="result"></output>
+          </div>
+          <div class="controls">
+            <button id="reset" title="重設">重設</button
+            ><button id="prev" title="上一步">上一步</button
+            ><button id="play" class="primary">播放動畫</button
+            ><button id="next">下一步</button
+            ><label class="speed"
+              >速度<select id="speed">
+                <option value="1800">0.5×</option>
+                <option value="900" selected>1×</option>
+                <option value="450">2×</option>
+              </select></label
+            >
+          </div>
+          <div class="timeline">
+            <input
+              id="seek"
+              aria-label="動畫步驟"
+              type="range"
+              min="0"
+              value="0"
+            /><span id="counter"></span>
+          </div>
+        </section>
+        <aside class="panel code-panel">
+          <div class="panel-head">
+            <span>02 / 同步程式碼</span><span class="tag">PYTHON</span>
+          </div>
+          <pre id="code" aria-label="原始 Python 程式碼"></pre>
+          <details class="insight">
+            <summary>原理說明：為什麼「老大相同」就代表有環？</summary>
+            <h2>同一組的點，早就有路互通。</h2>
+            <p>
+              <b>parent[x]</b> 是 x
+              的上司。一路往上找到上司是自己的點，就是這一組的老大（root）。同一組的點老大相同。
+            </p>
+            <p>
+              每加一條邊 a — b：如果 a、b
+              老大不同，代表兩組原本不連通，把其中一個老大掛到另一個老大底下就合併了。
+            </p>
+            <p>
+              如果老大相同，代表 a 和 b
+              之間本來就有一條路，再加這條邊就繞成一個環，所以它是多餘的邊。
+            </p>
+            <p>
+              <b>路徑壓縮</b>：find 回傳的路上，把每個點的 parent
+              直接改成老大，樹會被壓平，之後再找就很快。平均每次操作接近 O(1)。
+            </p>
+          </details>
+        </aside>
+      </div>
+      <footer>
+        <span>684 / 老大不同就合併；老大相同，這條邊就是環的最後一塊。</span
+        ><span>原生 HTML · CSS · JavaScript</span>
+      </footer>
+    </main>
+  </body>
+</html>
